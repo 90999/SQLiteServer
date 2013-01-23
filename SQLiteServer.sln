@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteServer.Connector", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteServer.TestClient", "SQLiteServer.TestClient\SQLiteServer.TestClient.csproj", "{4F3E3452-CB05-4133-A013-2E3F5001102A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B07E80C-EDDF-40D0-B1A0-B31CA58357FA}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,6 +30,8 @@ Global
 		{DB0B5C18-2787-4E4B-975A-EF1228A3A01A}.Debug|x86.Build.0 = Debug|x86
 		{DB0B5C18-2787-4E4B-975A-EF1228A3A01A}.Release|x86.ActiveCfg = Release|x86
 		{DB0B5C18-2787-4E4B-975A-EF1228A3A01A}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SQLiteServer.TestClient\SQLiteServer.TestClient.csproj
