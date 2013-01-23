@@ -18,26 +18,28 @@ C# Client Access Library to connect applications to the SQLiteServer easily.
 Usage example
 -------------
 
-	using SQLiteServer;
-	namespace Test
-	{
-	    class TestClass
-    	{
-	        public void Main (string[] args)
-    	    {
-        	    SQLiteServerConnector = new SQLiteServer.Connector ();
-				SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL("SELECT 1");
-	            // bool             Result.Error
-    	        // string           Result.ErrorMessage
-        	    // XDocument        Result.XML
-	            // string [col]     Result.Names
-    	        // string [row,col] Result.Value
-        	    // string [row,col] Result.Type
-	            // int              Result.FieldCount
-    	        // int              Result.RowCount
-	        }
-	    }
+```C#
+using SQLiteServer;
+namespace Test
+{
+    class TestClass
+   	{
+        public void Main (string[] args)
+   	    {
+       	    SQLiteServerConnector = new SQLiteServer.Connector ();
+			SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL("SELECT 1");
+			// bool             Result.Error
+            // string           Result.ErrorMessage
+       	    // XDocument        Result.XML
+			// string [col]     Result.Names
+			// string [row,col] Result.Value
+			// string [row,col] Result.Type
+			// int              Result.FieldCount
+			// int              Result.RowCount
+		}
 	}
+}
+```
 
 
 SQLiteServer.TestClient (License: GPL)
