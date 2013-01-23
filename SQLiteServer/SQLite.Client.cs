@@ -37,7 +37,22 @@ namespace SQLite
 				SqliteConnection.CreateFile (DatabaseFile);
 			}
 			Connection = new SqliteConnection ("Data Source=" + DatabaseFile);
-			Connection.Open();
+			Connection.Open ();
+
+			// Initial Connection Querys
+			string[] InitSQL = {
+				"PRAGMA journal_mode = WAL;",
+				"PRAGMA encoding='UTF-8';",
+				"PRAGMA auto_vacuum='INCREMENTAL';",
+				"PRAGMA incremental_vacuum(10000);",
+				"PRAGMA synchronous='FULL';"
+			};
+			foreach (string Query in InitSQL) {
+				using (var Cmd = Connection.CreateCommand ()) {
+					Cmd.CommandText = Query;
+					Cmd.ExecuteNonQuery ();
+				}
+			}
 		}
 
 		// Close
