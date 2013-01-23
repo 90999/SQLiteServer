@@ -1,5 +1,5 @@
-SQLiteServer (1.0 BETA RELEASE - License: GPL)
-==============================================
+SQLiteServer (License: GPL)
+===========================
 
 TCP Server for remote or local network accesss to a SQLite Database.
 
