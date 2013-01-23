@@ -4,20 +4,24 @@ using System.Xml.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
+// Own
 using TCP;
 
 namespace SQLiteServer
 {
+	// Result structure
 	public struct SQLiteResult {
-		public XDocument XML;
-		public Boolean Error;
-		public String ErrorMessage;
-		public int RowCount;
-		public int FieldCount;
-		public string[] Names;
-		public string[,] Value;
-		public string[,] Type;
+		public XDocument XML;			// Raw XML Result
+		// Parsed by ParseSQLiteResult:
+		public Boolean Error;			// If "true" then an error accoured
+		public String ErrorMessage;		// Only valid if Error is "true"
+		public int RowCount;			// Number of Rows within XML file
+		public int FieldCount;			// Number of Columns/Fields within XML file
+		public string[] Names;			// List of Column-Names
+		public string[,] Value;			// Values stored as [row,col] array
+		public string[,] Type;			// Types stored as [row,col] array
 	}
 
 	public class Connector
@@ -68,7 +72,7 @@ namespace SQLiteServer
 
 		public void ParseSQLiteResult (ref SQLiteResult AResult)
 		{
-			// Fehlerflagge
+			// Fehlerflag
 			try {
 				XElement Status = AResult.XML.Root.Element ("Status");
 				AResult.Error = Convert.ToBoolean (Status.Attribute ("Error").Value);

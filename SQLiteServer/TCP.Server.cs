@@ -1,8 +1,3 @@
-// Allgemeiner event basierter TCP-Server
-//
-// Änderungen:
-// 23.01.2013 Tim David Saxen: Erste Version
-
 using System;
 using System.Text;
 using System.Net.Sockets;
@@ -10,7 +5,7 @@ using System.Threading;
 using System.Net;
 using System.IO;
 
-// Eigene
+// Own
 using Tools;
 
 namespace TCP {
@@ -53,10 +48,10 @@ namespace TCP {
 		public event OnDisconnectEventHandler OnDisconnect;
 
 		// Constructor
-		public Server (int APort)
+		public Server (IPAddress AIP, int APort)
 		{
-			this.tcpListener = new TcpListener(IPAddress.Any, APort);
-			this.listenThread = new Thread(new ThreadStart(ListenForClients));
+			tcpListener = new TcpListener (AIP, APort);
+			listenThread = new Thread(new ThreadStart(ListenForClients));
 		}
 
 		// Destructor
@@ -69,12 +64,12 @@ namespace TCP {
 			tcpListener = null;
 		}
 		
-		// listenThread starten
+		// listenThread start
 		public void Start() {
 			listenThread.Start();
 		}
 		
-		// listenThread beenden
+		// listenThread stop
 		public void Stop() {
 			this.listenThread.Interrupt();		
 		}
@@ -85,9 +80,7 @@ namespace TCP {
 			this.tcpListener.Start();
 			while (true)
 			{
-				//blocks until a client has connected to the server
 				TcpClient client = this.tcpListener.AcceptTcpClient();
-				//create a thread to handle communication with connected client
 				Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
 				clientThread.Start(client);
 			}
@@ -104,11 +97,11 @@ namespace TCP {
 
 			byte[] welcomeMsg = System.Text.Encoding.Unicode.GetBytes("SQLiteServer v1.0");
 
-			var OnDataEvent = OnData;              // Niemals direkt mit dem Event arbeiten da ansonsten
-			var OnConnectEvent = OnConnect;        // das Handle zwischen NULL-Abfrage und Ausführen
-			var OnDisconnectEvent = OnDisconnect;  // verloren gehen kann.
+			var OnDataEvent = OnData;              // Never use "Event" directly. The Handle can turn
+			var OnConnectEvent = OnConnect;        // NULL betwenn != null check and execution.
+			var OnDisconnectEvent = OnDisconnect;  // 
 
-			// OnConnect Event
+			// Fire: OnConnect event
 			if (OnConnectEvent != null) OnConnectEvent(
 				this,
 				new OnConnectDisconnectEventArgs(
@@ -116,16 +109,27 @@ namespace TCP {
 				)
 			);
 
-			// Sende Willkommens-Nachricht an den Client
+			// Send Welcome Message to Client
 			outStream.WriteLine("SQLiteServer v1.0");
 			outStream.Flush();
 
-			// Query initialisieren
+			// Initialize Query buffer
 			string Query = "";
 			int Count = -1;
 			bool QueryDone = false;
 
-			// Kommunikation
+			// Communication
+
+			// Protocol:
+			// Client: REQUEST:3        <- Where 3 is Number of Lines following
+			// Client: .SELECT          <- Following 3 Lines are SQL Query-Lines prefixed by "."
+			// Client: .*
+			// Client: .FROM test;
+			// (3 Lines Reached -> OnDataEvent fired within Server)
+			// Server: RESULT:10        <- Where 10 is Number of Lines following
+			// Server: .<xml...         <- Following 10 Lines is the XML-Result of the Query
+			// (10 Lines Reached -> Client Parses Result)
+
 			while (true)
 			{
 				try
@@ -174,7 +178,7 @@ namespace TCP {
 				}
 			}
 			
-			// OnDisconnect Event
+			// Fire OnDisconnect event
 			if (OnDisconnectEvent != null) OnDisconnectEvent(
 				this,
 				new OnConnectDisconnectEventArgs(

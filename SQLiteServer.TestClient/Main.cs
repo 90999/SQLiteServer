@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Xml;
 using System.Xml.Linq;
 
-// Eigene
+// Own
 using SQLiteServer;
 
 namespace TestClient
@@ -15,14 +15,14 @@ namespace TestClient
 		// Constructor
 		public static void Main (string[] args)
 		{
-			// Begrüßung ausgeben
+			// Show Welcom Message
 			Console.WriteLine ("SQLiteServer Test Client v1.0");
 
-			// Variablen initialisieren
+			// Init Variables
 			string Host = "localhost";
-			int Port = 11834;
+			int Port = 11833;
 
-			// Kommandozeilenparameter parsen
+			// Parse Commandline Parameters
 			StringDictionary Parameters = Tools.System.ParseCommandlineArguments(args);
 			if (Parameters["host"] != null) Host = Parameters["host"];
 			if (Parameters["port"] != null) Port = Convert.ToInt32( Parameters["port"] );
@@ -78,6 +78,7 @@ namespace TestClient
 			} catch (Exception e) {
 				Console.WriteLine ("Error: " + e.Message);
 				Console.WriteLine ("");
+				Environment.Exit(99);
 			}
 
 		}

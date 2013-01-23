@@ -10,8 +10,8 @@ namespace TCP
 {
 	internal class Client
 	{
-		private string Host = "";
-		private int Port = 0;
+		private string Host = "localhost";
+		private int Port = 11833;
 		private TcpClient Connection = null;
 		private NetworkStream Stream = null; 
 
@@ -31,11 +31,11 @@ namespace TCP
 		// Connect
 		public Boolean Connect (string AHost, int APort)
 		{
-			// Variablen übernehmen
+			// Store Variables
 			Host = AHost;
 			Port = APort;
 			
-			// Verbinden
+			// Connect
 			if (Connection != null) return false;
 			try {
 				Connection = new TcpClient(Host, Port);
@@ -81,23 +81,35 @@ namespace TCP
 		public string ExecSQL (string ASQLQuery)
 		{
 			if (Connection == null) {
-				// XML-Fehler-Dokument erstellen
+				// Create XML error Document
 				XDocument XML = new XDocument (new XDeclaration ("1.0", "utf-8", "yes"));
 				XElement XRoot = new XElement ("Result");
 				
-				// Fehlermeldung in XML-Dokument schreiben
+				// Add error message to XML Document
 				XElement XStatus = new XElement ("Status");
 				XStatus.Add (new XAttribute ("Error", true));
 				XStatus.Add (new XAttribute ("ErrorMessage", "Client Error: Not connected to SQLiteServer"));
 				XRoot.Add (XStatus);
 
-				// XML-Dokument in String wandeln und zurückgeben
+				// Return XML-Document as String
 				XML.Add (XRoot);
 				return XML.Declaration.ToString () + Environment.NewLine + XML.ToString ();
 			}
 
 			StreamReader inStream = new StreamReader (Stream);
 			StreamWriter outStream = new StreamWriter (Stream);
+
+			// Communication
+			
+			// Protocol:
+			// Client: REQUEST:3        <- Where 3 is Number of Lines following
+			// Client: .SELECT          <- Following 3 Lines are SQL Query-Lines prefixed by "."
+			// Client: .*
+			// Client: .FROM test;
+			// (3 Lines Reached -> OnDataEvent fired within Server)
+			// Server: RESULT:10        <- Where 10 is Number of Lines following
+			// Server: .<xml...         <- Following 10 Lines is the XML-Result of the Query
+			// (10 Lines Reached -> Client Parses Result)
 
 			try {
 				// Request senden
@@ -143,17 +155,17 @@ namespace TCP
 					}
 				}
 			} catch (Exception e) {
-				// XML-Fehler-Dokument erstellen
+				// Create XML error Document
 				XDocument XML = new XDocument (new XDeclaration ("1.0", "utf-8", "yes"));
 				XElement XRoot = new XElement ("Result");
 				
-				// Fehlermeldung in XML-Dokument schreiben
+				// Add error message to XML Document
 				XElement XStatus = new XElement ("Status");
 				XStatus.Add (new XAttribute ("Error", true));
 				XStatus.Add (new XAttribute ("ErrorMessage", "Client Exception: " + e.Message));
 				XRoot.Add (XStatus);
 				
-				// XML-Dokument in String wandeln und zurückgeben
+				// Return XML-Document as String
 				XML.Add (XRoot);
 				return XML.Declaration.ToString () + Environment.NewLine + XML.ToString ();
 			}

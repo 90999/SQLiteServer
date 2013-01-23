@@ -1,14 +1,15 @@
 SQLiteServer (1.0 BETA RELEASE - License: GPL)
 ==============================================
 
-Currently still experimental TCP Server for SQLite accesss.
+TCP Server for remote or local network accesss to a SQLite Database.
 
 **Commandline Parameters:**
 
 ```Shell
 SQLiteServer.exe
-[--host HOSTNAME]     listen on Host or IP (default: localhost)
-[--port PORT]         listen on Port (default: 11833)
+[--dbfile=FILENAME]   filename of Database to deploy (default: database.db3)
+[--host=HOSTNAME]     listen on Host or IP (default: localhost)
+[--port=PORT]         listen on Port (default: 11833)
 ```
 
 
@@ -52,6 +53,6 @@ Example implementation of a Client unsing C# Client Access Library "SQLiteServer
 
 ```Shell
 SQLiteServer.TestClient.exe
-[--host HOSTNAME]     connect to Host or IP (default: localhost)
-[--port PORT]         connect to Port (default: 11833)
+[--host=HOSTNAME]     connect to Host or IP (default: localhost)
+[--port=PORT]         connect to Port (default: 11833)
 ```

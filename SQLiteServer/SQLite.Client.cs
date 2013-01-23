@@ -1,8 +1,3 @@
-// SQL-Verbindung und Rückgabe von Query-Antworten als XML-Dokument
-//
-// Änderungen:
-// 23.01.2013 Tim David Saxen: Erste Version
-
 using System;
 using System.Data;
 using System.IO;
@@ -25,10 +20,7 @@ namespace SQLite
 		// Constructor
 		public Client(string ADatabaseFile)
 		{
-			// Variablen übernehmen
 			DatabaseFile = ADatabaseFile;
-
-			// SQL-Verbindung aufbauen
 			Open();
 		}
 
@@ -61,15 +53,15 @@ namespace SQLite
 			try
 			{
 				using (var Cmd = Connection.CreateCommand ()) {
-					// SQL-Query ausführen
+					// Execute SQL-Query 
 					Cmd.CommandText = ASQL;
 					var Reader = Cmd.ExecuteReader();
 
-					// XML-Dokument erstellen
+					// Create XML-Document
 					XDocument XML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"));
 					XElement XRoot = new XElement("Result");
 
-					// Zeilen in XML-Dokument übernehmen
+					// Add Result
 					int Row = 0;
 					XElement XRows = new XElement("Rows");
 					XElement XRow = null;
@@ -79,6 +71,7 @@ namespace SQLite
 					bool first = true;
 					while (Reader.Read ())
 					{
+						// On First element add Field/Column Information
 						if (first) {
 							first = false;
 							for (int i = 0; i<Reader.FieldCount; i++) {
@@ -89,6 +82,7 @@ namespace SQLite
 							}
 						}
 
+						// Add Row
 						XRow = new XElement("Row");
 						XRow.Add(new XAttribute("No", Row));
 						for (int i = 0; i<Reader.FieldCount; i++) {
@@ -104,31 +98,31 @@ namespace SQLite
 					XRoot.Add(XFieldNames);
 					XRoot.Add(XRows);
 
-					// Statusinformatuonen zum Query in XML-Dokument übernehmen
+					// Add Status/Error and Query Information
 					XElement XStatus = new XElement("Status");
 					XStatus.Add(new XAttribute("Error", false));
 					XStatus.Add(new XAttribute("FieldCount", Reader.FieldCount.ToString()));
 					XStatus.Add(new XAttribute("RowCount", Row.ToString()));
 					XRoot.AddFirst(XStatus);
 
-					// XML-Dokument in String wandeln und zurückgeben
+					// Return XML-Document as String
 					XML.Add(XRoot);
 					return XML.Declaration.ToString() + Environment.NewLine + XML.ToString();
 				}
 			}
 			catch(Exception e)
 			{
-				// XML-Fehler-Dokument erstellen
+				// Create XML-Document
 				XDocument XML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"));
 				XElement XRoot = new XElement("Result");
 
-				// Fehlermeldung in XML-Dokument schreiben
+				// Add Error Message to XML-Document
 				XElement XStatus = new XElement("Status");
 				XStatus.Add(new XAttribute("Error", true));
 				XStatus.Add(new XAttribute("ErrorMessage", e.Message.Replace("\r", " ").Replace("\n", " ").Replace("  ", " ").Trim()));
 				XRoot.Add(XStatus);
 
-				// XML-Dokument in String wandeln und zurückgeben
+				// Return XML-Document as String
 				XML.Add(XRoot);
 				return XML.Declaration.ToString() + Environment.NewLine + XML.ToString();
 			}

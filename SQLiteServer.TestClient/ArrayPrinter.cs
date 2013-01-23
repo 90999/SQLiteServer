@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 
+// Abgeleitet von: http://stackoverflow.com/questions/856845/how-to-best-way-to-draw-table-in-console-app-c
+// Original Autor: Patrick McDonald
+
 namespace TestClient
 {
 	class ArrayPrinter
@@ -10,8 +13,8 @@ namespace TestClient
 		const string cellRightTop = "┐";
 		const string cellLeftBottom = "└";
 		const string cellRightBottom = "┘";
-		const string cellHorizontalJointTop = "┬";
-		const string cellHorizontalJointbottom = "┴";
+		// const string cellHorizontalJointTop = "┬";
+		// const string cellHorizontalJointbottom = "┴";
 		const string cellVerticalJointLeft = "├";
 		const string cellTJoint = "┼";
 		const string cellVerticalJointRight = "┤";
@@ -22,27 +25,30 @@ namespace TestClient
 		{
 			string formattedString = string.Empty;
 			
-			// Abbruchbedingungen
-			if (arrValues == null)
-				return formattedString;
-			if (arrFieldNames == null)
-				return formattedString;
+			// Exit cases
+			if (arrValues == null) return formattedString;
+			if (arrFieldNames == null) return formattedString;
 			
-			// Zeilen und Spalten ermitteln
-			int dimension1Length = arrValues.GetLength (0);
-			int dimension2Length = arrValues.GetLength (1);
+			// Dimensions
+			int dimension1Length = arrValues.GetLength (0); // Rows
+			int dimension2Length = arrValues.GetLength (1); // Columns
 			
-			// Maximale Feldbreite
+			// Max width of Columns
 			int maxValueWidth = GetMaxCellWidth (arrValues);
 			int maxFieldWidth = GetMaxFieldWidth (arrFieldNames);
 			int maxCellWidth = maxValueWidth > maxFieldWidth ? maxValueWidth : maxFieldWidth; 
 			
+			// Width of a complete Line
 			int indentLength = (dimension2Length * maxCellWidth) + (dimension2Length - 1);
 
-			//printing top line;
+			// ---------------------------------------------------------------------------------
+			// Fields
+			// ---------------------------------------------------------------------------------
+
+			// Top Line
 			formattedString = string.Format ("{0}{1}{2}{3}", cellLeftTop, Indent (indentLength, '─'), cellRightTop, System.Environment.NewLine);
 			
-			// Kopfzeile (Feldnameb)
+			// Field Names
 			string lineWithValues = cellVerticalLine;
 			for (int i = 0; i < dimension2Length; i++) {
 				string value = (isLeftAligned) ? arrFieldNames [i].PadRight (maxCellWidth, ' ') : arrFieldNames [i].PadLeft (maxCellWidth, ' ');
@@ -50,13 +56,17 @@ namespace TestClient
 			}
 			formattedString += string.Format("{0}{1}", lineWithValues, System.Environment.NewLine);
 
-			//printing bottom line
+			// Bottom Line
 			formattedString += string.Format("{0}{1}{2}{3}", cellLeftBottom, Indent(indentLength, '─'), cellRightBottom, System.Environment.NewLine);
 
-			//printing top line;
+			// ---------------------------------------------------------------------------------
+			// Rows
+			// ---------------------------------------------------------------------------------
+
+			// Top Line
 			formattedString += string.Format ("{0}{1}{2}{3}", cellLeftTop, Indent (indentLength, '─'), cellRightTop, System.Environment.NewLine);
 
-			// Felder
+			// Rows
 			string line;
 			for (int i = 0; i < dimension1Length; i++)
 			{
@@ -80,12 +90,13 @@ namespace TestClient
 				}
 			}
 
-			//printing bottom line
+			// Bottom Line
 			formattedString += string.Format("{0}{1}{2}{3}", cellLeftBottom, Indent(indentLength, '─'), cellRightBottom, System.Environment.NewLine);
 
 			return formattedString;
 		}
 
+		// Get Max Width of Columns
 		private static int GetMaxCellWidth(string[,] arrValues)
 		{
 			int maxWidth = 1;
@@ -105,6 +116,7 @@ namespace TestClient
 			return maxWidth;
 		}
 
+		// Get Max Width of Field Names
 		private static int GetMaxFieldWidth(string[] arrValues)
 		{
 			int maxWidth = 1;
@@ -121,6 +133,7 @@ namespace TestClient
 			return maxWidth;
 		}
 
+		// Return a Line
 		private static string Indent(int count, char chr)
 		{
 			return string.Empty.PadLeft(count, chr);                 
