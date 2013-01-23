@@ -5,9 +5,11 @@ Currently still experimental TCP Server for SQLite accesss.
 
 **Commandline Parameters:**
 
+```Shell
 SQLiteServer.exe
 [--host HOSTNAME]     listen on Host or IP (default: localhost)
 [--port PORT]         listen on Port (default: 11833)
+```
 
 
 SQLiteServer.Connector (License: LGPL)
@@ -48,6 +50,8 @@ Example implementation of a Client unsing C# Client Access Library "SQLiteServer
 
 **Commandline Parameters:**
 
+```Shell
 SQLiteServer.TestClient.exe
 [--host HOSTNAME]     connect to Host or IP (default: localhost)
 [--port PORT]         connect to Port (default: 11833)
+```
