@@ -7,7 +7,7 @@ TCP Server for remote or local network accesss to a SQLite Database.
 
 ```Shell
 SQLiteServer.exe
-[--dbfile=FILENAME]   filename of Database to deploy (default: database.db3)
+[--dbfile=FILENAME]   filename of Database to serve (default: database.db3)
 [--host=HOSTNAME]     listen on Host or IP (default: localhost)
 [--port=PORT]         listen on Port (default: 11833)
 ```
