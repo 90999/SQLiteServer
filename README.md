@@ -27,7 +27,6 @@ Usage example
     	    {
         	    SQLiteServerConnector = new SQLiteServer.Connector ();
 				SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL("SELECT 1");
-            
 	            // bool             Result.Error
     	        // string           Result.ErrorMessage
         	    // XDocument        Result.XML
