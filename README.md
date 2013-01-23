@@ -1,5 +1,5 @@
-SQLiteServer (License: GPL)
-===========================
+SQLiteServer (License: GPLv3)
+=============================
 
 TCP Server for remote or local network accesss to a SQLite Database.
 
@@ -13,8 +13,8 @@ SQLiteServer.exe
 ```
 
 
-SQLiteServer.Connector (License: LGPL)
-======================================
+SQLiteServer.Connector (License: LGPLv3)
+========================================
 
 C# Client Access Library to connect applications to the SQLiteServer easily.
 
@@ -44,8 +44,8 @@ namespace Test
 ```
 
 
-SQLiteServer.TestClient (License: GPL)
-======================================
+SQLiteServer.TestClient (License: GPLv3)
+========================================
 
 Example implementation of a Client unsing C# Client Access Library "SQLiteServer.Connector.dll".
 
