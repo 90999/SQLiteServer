@@ -17,6 +17,7 @@ namespace TestClient
 		{
 			// Show Welcom Message
 			Console.WriteLine ("SQLiteServer Test Client v1.0");
+			Console.WriteLine ("");
 
 			// Init Variables
 			string Host = "localhost";
@@ -28,32 +29,46 @@ namespace TestClient
 			if (Parameters["port"] != null) Port = Convert.ToInt32( Parameters["port"] );
 
 			// Verbindung zum SQLiteServer initialisieren
-			SQLiteServerConnector = new SQLiteServer.Connector ();
 			try {
+				SQLiteServerConnector = new SQLiteServer.Connector (Host, Port);
+
+				Console.WriteLine ("Commands:");
+				Console.WriteLine ("");
+				Console.WriteLine ("  .result={n}  Request query result (0=off 1=on, default=1)");
+				Console.WriteLine ("  .quit        Exit this client application");
+				Console.WriteLine ("");
+
 				String Query = "";
 				String Line = "";
+				Boolean NoResult = false;
 				SQLiteServer.SQLiteResult Result;
-
-				// Verbindung zum SQLiteServer aufbauen
-				if (! SQLiteServerConnector.Connect (Host, Port)) {
-					throw new System.OperationCanceledException ("Cannot connect to SQLiteServer");
-				}
 
 				// Benutzereingaben parsen
 				while (true) {
-					Console.Write ("Enter SQL Query (or .quit): ");
+					Console.Write ("Enter SQL Query or Command: ");
 					Line = Console.ReadLine ();
 					// Eingabe: .quit -> beenden!
 					if (Line.Trim().ToLower() == ".quit") {
+						Console.WriteLine("Bye!");
+						Console.WriteLine("");
 						break;
-					// Eingabe an Query anhängen
+					// Result
+					} else if (Line.Trim().ToLower() == ".result=0") {
+						NoResult = true;
+						Console.WriteLine("Result requests switched off.");
+						Console.WriteLine("");
+					} else if (Line.Trim().ToLower() == ".result=1") {
+						NoResult = false;
+						Console.WriteLine("Result requests switched on.");
+						Console.WriteLine("");
+						// Eingabe an Query anhängen
 					} else {
 						Query = Query + Line + Environment.NewLine;
 					}
 					// Wenn ein ; am ende der Zeile steht das Query an die Datenbank schicken
 					if ((Line.Trim().Length > 0) && (Line.Trim() != "") && (Line.Trim().Substring(Line.Length-1, 1) == ";")) {
 						Query = Query.TrimEnd('\r', '\n');;
-						Result = SQLiteServerConnector.ExecSQL(Query);
+						Result = SQLiteServerConnector.ExecSQL(Query, NoResult);
 						// Fehler?
 						if (Result.Error) {
 							Console.WriteLine("ERROR: " + Result.ErrorMessage);
@@ -66,7 +81,8 @@ namespace TestClient
 								);
 							// Keine Zeilen empfangen
 							} else {
-								Console.WriteLine("Ok.");
+								Console.WriteLine( (NoResult ? "Ok. (Result requests disabled!)" : "Ok."));
+								Console.WriteLine("");
 							}
 						}
 						// Nächstes query....
@@ -86,11 +102,7 @@ namespace TestClient
 		// Destructor
 		~ TestClient ()
 		{
-			// Ggf. Verbindung zum SQLite-Server trennen
-			try {
-				if (SQLiteServerConnector != null) SQLiteServerConnector.Disconnect ();
-			} catch {
-			}
+			//
 		}
 
 	}

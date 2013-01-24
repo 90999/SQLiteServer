@@ -28,45 +28,61 @@ namespace SQLiteServer
 	{
 		private static TCP.Client TCPClient = null;
 
-		// Connect
-		public Boolean Connect (string AHost, int APort)
+		// Constructor
+		public Connector (string AHost, int APort)
 		{
-			if (TCPClient != null) {
-				TCPClient.Disconnect ();
+			TCPClient = new TCP.Client (AHost, APort);
+
+			// Initial Connect to check if connection to server is possible.
+			if (! TCPClient.Connect ()) {
+				throw new System.InvalidOperationException ("Cannot connect to Server");
 			}
-			TCPClient = new TCP.Client();
-			return TCPClient.Connect (AHost, APort);
 		}
-		
-		// Connected
-		public Boolean Connected ()
+
+		// Destructor
+		~Connector ()
 		{
-			if (TCPClient == null) return false;
-			return TCPClient.Connected ();
+			//
+			if (TCPClient != null) TCPClient.Disconnect ();
 		}
-		
-		// Disconnect
-		public Boolean Disconnect ()
-		{
-			if (TCPClient == null) return false;
-			Boolean res = TCPClient.Disconnect ();
-			TCPClient = null;
-			return res;
-		}
-		
+
 		// ExecSQL
-		public SQLiteResult ExecSQL (string ASQLQuery)
+		public SQLiteResult ExecSQL (string ASQLQuery, Boolean ANoResult = false)
 		{
-			if (! Connected ()) {
-				throw new System.InvalidOperationException ("Not Connected");
+			// Initialize Result
+			SQLiteResult Res = new SQLiteResult ();
+			Res.XML = new XDocument();
+			Res.Error = true;
+			Res.ErrorMessage = "Result set is init value";
+			Res.FieldCount = 0;
+			Res.RowCount = 0;
+			Res.Names = new string[0];
+			Res.Type = new string[0,0];
+			Res.Value = new string[0,0];
+
+			// Send Query to TCP-Client
+			try
+			{
+				// SQL Query -> TCP Client
+				if (! TCPClient.Connected ()) {
+					TCPClient.Connect();
+				}
+				string ExecResult = TCPClient.ExecSQL (ASQLQuery, ANoResult);
+
+				// Handle Result
+				if (ANoResult) {
+					Res.Error = false;
+				} else {
+					Res.XML = XDocument.Parse (ExecResult);
+					ParseSQLiteResult (ref Res);
+				}
+
+			} catch(Exception e) {
+				Res.Error = true;
+				Res.ErrorMessage = "Client Exception1: " + e.Message;
 			}
 
-			SQLiteResult Res = new SQLiteResult ();
-
-			string ExecResult = TCPClient.ExecSQL (ASQLQuery);
-			Res.XML = XDocument.Parse (ExecResult);
-			ParseSQLiteResult (ref Res);
-			//Res.Error = false;
+			// Return result
 			return Res;
 		}
 

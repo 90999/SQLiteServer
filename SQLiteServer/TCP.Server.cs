@@ -17,14 +17,20 @@ namespace TCP {
 		// OnData Event
 		public class OnDataEventArgs : EventArgs
 		{
-			private string _Data;
-			public OnDataEventArgs(string Data)
+			private string _SQLQuery;
+			private Boolean _NoResult;
+			public OnDataEventArgs(string SQLQuery, Boolean NoResult)
 			{
-				_Data = Data;
+				_SQLQuery = SQLQuery;
+				_NoResult = NoResult;
 			}
-			public string Data
+			public string SQLQuery
 			{
-				get { return _Data; }
+				get { return _SQLQuery; }
+			}
+			public Boolean NoResult
+			{
+				get { return _NoResult; }
 			}
 		}
 		public delegate string OnDataEventHandler(object sender, OnDataEventArgs e);
@@ -117,11 +123,13 @@ namespace TCP {
 			string Query = "";
 			int Count = -1;
 			bool QueryDone = false;
+			bool NoResult = false;
+			string[] LineSplited = {};
 
 			// Communication
 
 			// Protocol:
-			// Client: REQUEST:3        <- Where 3 is Number of Lines following
+			// Client: REQUEST:3:1      <- Where 3 is Number of Lines following and 1 means no result (0 = with result)
 			// Client: .SELECT          <- Following 3 Lines are SQL Query-Lines prefixed by "."
 			// Client: .*
 			// Client: .FROM test;
@@ -137,36 +145,54 @@ namespace TCP {
 					if ((Line = inStream.ReadLine()) != null)
 					{
 						if (Line == "") {
+							//						
+						} else {
+							LineSplited = Line.Split(':');
 
-						// REQUEST
-						} else if (Line.Split(':').GetValue(0).ToString().ToUpper() == "REQUEST") {
-							Count = Convert.ToInt32( Line.Split(':').GetValue(1).ToString() );
-							QueryDone = false;
-							Query = "";
-						// .
-						} else if ((QueryDone == false) && (Count>0) && (Line.Substring(0,1) == ".")) {
-							Count = Count - 1;
-							Query = Query + Line.Substring(1,Line.Length-1) + Environment.NewLine;
-							if (Count == 0) {
-								Query = Query.TrimEnd('\r', '\n');
-								QueryDone = true;
-								Count = -1;
+							// REQUEST
+							if ((LineSplited.Length >= 1) && (LineSplited.GetValue(0).ToString().ToUpper() == "REQUEST")) {
+								Query = "";
+								QueryDone = false;
+								if (LineSplited.Length >= 2) {
+									Count = Convert.ToInt32( LineSplited.GetValue(1).ToString() );
+								} else {
+									Count = 0;
+								}
+								if (LineSplited.Length >= 3) {
+									NoResult = Convert.ToBoolean( LineSplited.GetValue(2).ToString() == "1" );
+								} else {
+									NoResult = false;
+								}
+							// .
+							} else if ((QueryDone == false) && (Count>0) && (Line.Substring(0,1) == ".")) {
+								Count = Count - 1;
+								Query = Query + Line.Substring(1,Line.Length-1) + Environment.NewLine;
+								if (Count == 0) {
+									Query = Query.TrimEnd('\r', '\n');
+									QueryDone = true;
+									Count = -1;
+								}
 							}
 						}
 
-						// OnData Event
+						// Fire OnData event -> Execute SQLite-Query
 						if ((QueryDone) && (OnDataEvent != null))
 						{
-							string QueryResult = OnDataEvent(this, new OnDataEventArgs(Query));
-							outStream.WriteLine(
-								"RESULT:" + QueryResult.Split('\n').Length
-							);
-							foreach (string QueryResultLine in QueryResult.Split('\n')) {
+							string QueryResult = OnDataEvent(this, new OnDataEventArgs(Query, NoResult));
+
+							// If there is a Result request return result...
+							if (! NoResult) {
 								outStream.WriteLine(
-									"." + QueryResultLine
+									"RESULT:" + QueryResult.Split('\n').Length
 								);
+								foreach (string QueryResultLine in QueryResult.Split('\n')) {
+									outStream.WriteLine(
+										"." + QueryResultLine
+									);
+								}
+								outStream.Flush();
 							}
-							outStream.Flush();
+
 						}
 					}
 

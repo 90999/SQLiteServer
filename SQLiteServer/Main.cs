@@ -100,8 +100,8 @@ namespace SQLiteServer {
 		// TCP-Server got SQL Query
 		private static string TCP_OnData (object sender, TCP.Server.OnDataEventArgs e)
 		{
-			Console.WriteLine (e.Data);
-			string SQLResult = SQLite.ExecuteSQL(e.Data);
+			Console.WriteLine ( (e.NoResult ? "! " : "") +  e.SQLQuery);
+			string SQLResult = SQLite.ExecuteSQL(e.SQLQuery, e.NoResult);
 
 			return SQLResult;
 		}
