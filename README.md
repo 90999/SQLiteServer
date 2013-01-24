@@ -62,8 +62,8 @@ namespace Test
 ```
 
 
-C# SQLiteServer.Connector (License: LGPLv3)
-===========================================
+PHP SQLiteServer.Connector (License: LGPLv3)
+============================================
 
 PHP Client Access Class to connect applications to the SQLiteServer easily.
 
