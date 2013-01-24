@@ -28,8 +28,9 @@ namespace Test
    	{
         public void Main (string[] args)
    	    {
-       	    SQLiteServerConnector = new SQLiteServer.Connector ();
-			SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL("SELECT 1");
+   	    	bool WithResultSet = true;
+       	    SQLiteServerConnector = new SQLiteServer.Connector ("localhost", 11833);
+			SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL("SELECT 1", WithResultSet);
 			// bool             Result.Error
             // string           Result.ErrorMessage
        	    // XDocument        Result.XML
