@@ -63,4 +63,18 @@
   <ItemGroup>
     <Folder Include="_Libs\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\_Compiled\Server\Mono.Data.Sqlite.dll">
+      <Link>Server\Mono.Data.Sqlite.dll</Link>
+    </None>
+    <None Include="..\_Compiled\Server\sqlite3.def">
+      <Link>Server\sqlite3.def</Link>
+    </None>
+    <None Include="..\_Compiled\Server\sqlite3.dll">
+      <Link>Server\sqlite3.dll</Link>
+    </None>
+    <None Include="..\_Compiled\Server\SQLiteServer.exe">
+      <Link>Server\SQLiteServer.exe</Link>
+    </None>
+  </ItemGroup>
 </Project>

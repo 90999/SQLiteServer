@@ -48,5 +48,14 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="_Libs\" />
+    <Folder Include="Client\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\_Compiled\Client\Mono.Data.Sqlite.dll">
+      <Link>Client\Mono.Data.Sqlite.dll</Link>
+    </None>
+    <None Include="..\_Compiled\Client\SQLiteServer.Connector.dll">
+      <Link>Client\SQLiteServer.Connector.dll</Link>
+    </None>
   </ItemGroup>
 </Project>

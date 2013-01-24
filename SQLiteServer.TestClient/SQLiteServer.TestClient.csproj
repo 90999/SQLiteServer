@@ -49,4 +49,18 @@
     <Compile Include="ArrayPrinter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Client\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\_Compiled\Client\Mono.Data.Sqlite.dll">
+      <Link>Client\Mono.Data.Sqlite.dll</Link>
+    </None>
+    <None Include="..\_Compiled\Client\SQLiteServer.Connector.dll">
+      <Link>Client\SQLiteServer.Connector.dll</Link>
+    </None>
+    <None Include="..\_Compiled\Client\SQLiteServer.TestClient.exe">
+      <Link>Client\SQLiteServer.TestClient.exe</Link>
+    </None>
+  </ItemGroup>
 </Project>
