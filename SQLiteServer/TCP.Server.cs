@@ -19,10 +19,12 @@ namespace TCP {
 		{
 			private string _SQLQuery;
 			private Boolean _NoResult;
-			public OnDataEventArgs(string SQLQuery, Boolean NoResult)
+			private string _AccessRights;
+			public OnDataEventArgs(string SQLQuery, Boolean NoResult, string AccessRights)
 			{
 				_SQLQuery = SQLQuery;
 				_NoResult = NoResult;
+				_AccessRights = AccessRights;
 			}
 			public string SQLQuery
 			{
@@ -32,11 +34,15 @@ namespace TCP {
 			{
 				get { return _NoResult; }
 			}
+			public string AccessRights
+			{
+				get { return _AccessRights; }
+			}
 		}
 		public delegate string OnDataEventHandler(object sender, OnDataEventArgs e);
 		public event OnDataEventHandler OnData;
 
-		// OnConnect/Disconnect
+		// OnConnect/Disconnect Event
 		public class OnConnectDisconnectEventArgs : EventArgs {
 			private string _RemoteEndPoint;
 			public OnConnectDisconnectEventArgs(string RemoteEndPoint)
@@ -52,6 +58,27 @@ namespace TCP {
 		public event OnConnectEventHandler OnConnect;
 		public delegate void OnDisconnectEventHandler(object sender, OnConnectDisconnectEventArgs e);
 		public event OnDisconnectEventHandler OnDisconnect;
+		
+		// OnUser Event
+		public class OnUserEventArgs : EventArgs {
+			private string _Username;
+			private string _Password;
+			public OnUserEventArgs(string Username, string Password)
+			{
+				_Username = Username;
+				_Password = Password;
+			}
+			public string Username
+			{
+				get { return _Username; }
+			}
+			public string Password
+			{
+				get { return _Password; }
+			}
+		}
+		public delegate string OnUserEventHandler(object sender, OnUserEventArgs e);
+		public event OnUserEventHandler OnUser;
 
 		// Constructor
 		public Server (IPAddress AIP, int APort)
@@ -100,12 +127,14 @@ namespace TCP {
 			StreamReader inStream = new StreamReader(ns);
 			StreamWriter outStream = new StreamWriter(ns);
 			string Line;
+			string AccessRight = ""; // ro = ReadOnly | rw = ReadWrite | other = NoAccess!
 
 			byte[] welcomeMsg = System.Text.Encoding.Unicode.GetBytes("SQLiteServer v1.0");
 
 			var OnDataEvent = OnData;              // Never use "Event" directly. The Handle can turn
 			var OnConnectEvent = OnConnect;        // NULL betwenn != null check and execution.
 			var OnDisconnectEvent = OnDisconnect;  // 
+			var OnUserEvent = OnUser;              // 
 
 			// Fire: OnConnect event
 			if (OnConnectEvent != null) OnConnectEvent(
@@ -129,6 +158,9 @@ namespace TCP {
 			// Communication
 
 			// Protocol:
+			// Server: SQLiteServer v1.0
+			// Client: USER:Name:Password
+			// Server: RIGHTS:rw        
 			// Client: REQUEST:3:1      <- Where 3 is Number of Lines following and 1 means no result (0 = with result)
 			// Client: .SELECT          <- Following 3 Lines are SQL Query-Lines prefixed by "."
 			// Client: .*
@@ -149,8 +181,23 @@ namespace TCP {
 						} else {
 							LineSplited = Line.Split(':');
 
+							// USER
+							if ((LineSplited.Length == 3) && (LineSplited.GetValue(0).ToString().ToUpper() == "USER")) {
+								// Fire: OnUser event
+								if (OnUserEvent != null) AccessRight = OnUserEvent(
+									this,
+									new OnUserEventArgs(
+										LineSplited.GetValue(1).ToString(),
+										LineSplited.GetValue(2).ToString()
+									)
+								);
+								outStream.WriteLine(
+									"RIGHTS:" + AccessRight
+								);
+								outStream.Flush();
+
 							// REQUEST
-							if ((LineSplited.Length >= 1) && (LineSplited.GetValue(0).ToString().ToUpper() == "REQUEST")) {
+							} else if ((LineSplited.Length >= 1) && (LineSplited.GetValue(0).ToString().ToUpper() == "REQUEST")) {
 								Query = "";
 								QueryDone = false;
 								if (LineSplited.Length >= 2) {
@@ -178,7 +225,7 @@ namespace TCP {
 						// Fire OnData event -> Execute SQLite-Query
 						if ((QueryDone) && (OnDataEvent != null))
 						{
-							string QueryResult = OnDataEvent(this, new OnDataEventArgs(Query, NoResult));
+							string QueryResult = OnDataEvent(this, new OnDataEventArgs(Query, NoResult, AccessRight));
 
 							// If there is a Result request return result...
 							if (! NoResult) {

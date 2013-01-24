@@ -12,15 +12,20 @@ namespace TCP
 	{
 		private string Host = "localhost";
 		private int Port = 11833;
+		private string Username = "Admin";
+		private string Password = "Admin";
+
 		private TcpClient Connection = null;
 		private NetworkStream Stream = null; 
 
 		// Constructor
-		public Client(string AHost, int APort)
+		public Client(string AHost, int APort, string AUsername, string APassword)
 		{
 			// Store Variables
 			Host = AHost;
 			Port = APort;
+			Username = AUsername;
+			Password = APassword;
 		}
 		
 		// Destructor
@@ -42,9 +47,49 @@ namespace TCP
 				StreamReader inStream = new StreamReader (Stream);
 				StreamWriter outStream = new StreamWriter (Stream);
 
-				string welcomeMsg = inStream.ReadLine();
-				if (welcomeMsg != "SQLiteServer v1.0") {
-					throw new System.NotSupportedException("Wrong version detected: " + welcomeMsg);
+				Int64 StartTick = 0;
+				string Line = "";
+
+				// Wait for welcome Message from Server...
+				StartTick = System.DateTime.Now.Ticks;
+				Line = "";
+				while (true) {
+					if ((System.DateTime.Now.Ticks-StartTick > 100000000)) { // 10sec (timeout!)
+						throw new System.TimeoutException("Welcome screen timed out");
+					}
+					if ((Line = inStream.ReadLine()) != null) {
+						if (Line == "") {
+							//
+						} else if (Line == "SQLiteServer v1.0") {
+							break;
+						} else {
+							throw new System.NotSupportedException("Wrong version detected: " + Line);
+						}
+					}
+				}
+
+				// Send Auth information
+				outStream.WriteLine("USER:" + Username + ":" + Password);
+				outStream.Flush();
+
+				// Wait for Auth reply...
+				StartTick = System.DateTime.Now.Ticks;
+				Line = "";
+				while (true) {
+					if ((System.DateTime.Now.Ticks-StartTick > 100000000)) { // 10sec (timeout!)
+						throw new System.TimeoutException("Login timed out");
+					}
+					if ((Line = inStream.ReadLine()) != null) {
+						if (Line == "") {
+							//
+						} else if (Line == "RIGHTS:rw") {
+							break;
+						} else if (Line == "RIGHTS:ro") {
+							break;
+						} else {
+							throw new System.NotSupportedException("Wrong result detected: " + Line);
+						}
+					}
 				}
 
 				return true;
@@ -90,18 +135,6 @@ namespace TCP
 			{
 				StreamReader inStream = new StreamReader (Stream);
 				StreamWriter outStream = new StreamWriter (Stream);
-
-				// Communication
-			
- 				// Protocol:
-				// Client: REQUEST:3:1      <- Where 3 is Number of Lines following and 1 means no result (0 = with result)
-				// Client: .SELECT          <- Following 3 Lines are SQL Query-Lines prefixed by "."
-				// Client: .*
-				// Client: .FROM test;
-				// (3 Lines Reached -> OnDataEvent fired within Server)
-				// Server: RESULT:10        <- Where 10 is Number of Lines following
-				// Server: .<xml...         <- Following 10 Lines is the XML-Result of the Query
-				// (10 Lines Reached -> Client Parses Result)
 
 				// Request senden
 				outStream.WriteLine("REQUEST:" + ASQLQuery.Split('\n').Length + ":" + (ANoResult ? "1" : "0"));

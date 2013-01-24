@@ -22,15 +22,19 @@ namespace TestClient
 			// Init Variables
 			string Host = "localhost";
 			int Port = 11833;
+			string Username = "Admin";
+			string Password = "Admin";
 
 			// Parse Commandline Parameters
 			StringDictionary Parameters = Tools.System.ParseCommandlineArguments(args);
 			if (Parameters["host"] != null) Host = Parameters["host"];
 			if (Parameters["port"] != null) Port = Convert.ToInt32( Parameters["port"] );
+			if (Parameters["user"] != null) Username = Parameters["user"];
+			if (Parameters["pass"] != null) Password = Parameters["pass"];
 
 			// Verbindung zum SQLiteServer initialisieren
 			try {
-				SQLiteServerConnector = new SQLiteServer.Connector (Host, Port);
+				SQLiteServerConnector = new SQLiteServer.Connector (Host, Port, Username, Password);
 
 				Console.WriteLine ("Commands:");
 				Console.WriteLine ("");

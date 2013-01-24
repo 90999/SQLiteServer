@@ -29,9 +29,9 @@ namespace SQLiteServer
 		private static TCP.Client TCPClient = null;
 
 		// Constructor
-		public Connector (string AHost, int APort)
+		public Connector (string AHost, int APort, string AUsername, string APassword)
 		{
-			TCPClient = new TCP.Client (AHost, APort);
+			TCPClient = new TCP.Client (AHost, APort, AUsername, APassword);
 
 			// Initial Connect to check if connection to server is possible.
 			if (! TCPClient.Connect ()) {
@@ -65,7 +65,7 @@ namespace SQLiteServer
 			{
 				// SQL Query -> TCP Client
 				if (! TCPClient.Connected ()) {
-					TCPClient.Connect();
+					if (! TCPClient.Connect()) throw new System.SystemException("Client exception: Cannot connect to Server");
 				}
 				string ExecResult = TCPClient.ExecSQL (ASQLQuery, ANoResult);
 

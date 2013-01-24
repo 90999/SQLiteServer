@@ -36,7 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = SQLiteServer\SQLiteServer.csproj
+		StartupItem = SQLiteServer.TestClient\SQLiteServer.TestClient.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None

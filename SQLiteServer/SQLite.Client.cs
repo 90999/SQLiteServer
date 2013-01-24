@@ -6,6 +6,7 @@ using System.Collections.Generic; // List<T>
 using Mono.Data.Sqlite;
 using System.Xml;
 using System.Xml.Linq;
+using System.Linq;
 
 // Eigene
 using Tools;
@@ -14,8 +15,9 @@ namespace SQLite
 {
 	public class Client
 	{
-		private static SqliteConnection Connection;
+		private static Dictionary<string, SqliteConnection> Connections = new Dictionary<string, SqliteConnection>();
 		private static string DatabaseFile;
+		private static string[] AccessRights = { "rw", "ro" };
 
 		// Constructor
 		public Client(string ADatabaseFile)
@@ -36,21 +38,32 @@ namespace SQLite
 			if (! File.Exists (DatabaseFile)) {
 				SqliteConnection.CreateFile (DatabaseFile);
 			}
-			Connection = new SqliteConnection ("Data Source=" + DatabaseFile);
-			Connection.Open ();
 
-			// Initial Connection Querys
-			string[] InitSQL = {
-				"PRAGMA journal_mode = WAL;",
-				"PRAGMA encoding='UTF-8';",
-				"PRAGMA auto_vacuum='INCREMENTAL';",
-				"PRAGMA incremental_vacuum(10000);",
-				"PRAGMA synchronous='FULL';"
-			};
-			foreach (string Query in InitSQL) {
-				using (var Cmd = Connection.CreateCommand ()) {
-					Cmd.CommandText = Query;
-					Cmd.ExecuteNonQuery ();
+			foreach (string AccessRight in AccessRights) {
+				Connections [AccessRight] = new SqliteConnection (
+					"Data Source=" + DatabaseFile +
+					";Version=3" +
+					";UseUTF8Encoding=True" +
+					(AccessRight == "ro" ? ";Read Only=True" : "")
+				);
+				Connections [AccessRight].Open ();
+
+				// Initial Connection Querys
+				string[] InitSQL =  {};
+				if (AccessRight == "ro") {
+					InitSQL = new string[] {
+						"PRAGMA encoding='UTF-8';"
+					};
+				} else if (AccessRight == "rw") {
+					InitSQL = new string[] {
+						"PRAGMA encoding='UTF-8';"
+					};
+				}
+				foreach (string Query in InitSQL) {
+					using (var Cmd = Connections[AccessRight].CreateCommand ()) {
+						Cmd.CommandText = Query;
+						Cmd.ExecuteNonQuery ();
+					}
 				}
 			}
 		}
@@ -58,16 +71,24 @@ namespace SQLite
 		// Close
 		private static void Close ()
 		{
-			Connection.Close();
-			Connection = null;
+			foreach (string AccessRight in AccessRights) {
+				Connections[AccessRight].Close ();
+				Connections[AccessRight] = null;
+			}
 		}
 
 		// ExecuteSQL
-		public string ExecuteSQL (string ASQL, Boolean ANoResult = false)
+		public string ExecuteSQL (string ASQL, string AccessRight, Boolean ANoResult = false)
 		{
 			try
 			{
-				using (var Cmd = Connection.CreateCommand ()) {
+				// Check what SQLite connection to use (ro or rw or throw exception)
+				if (! AccessRights.Contains(AccessRight)) {
+					throw new System.UnauthorizedAccessException("Not authorized");
+				}
+
+				// Execute SQL Query
+				using (var Cmd = Connections[AccessRight].CreateCommand ()) {
 
 					// Query without result request by client
 					if (ANoResult) {

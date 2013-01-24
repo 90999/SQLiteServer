@@ -49,6 +49,7 @@
     <Compile Include="..\_Libs\Tools.cs">
       <Link>_Libs\Tools.cs</Link>
     </Compile>
+    <Compile Include="UserAuth.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -75,6 +76,9 @@
     </None>
     <None Include="..\_Compiled\Server\SQLiteServer.exe">
       <Link>Server\SQLiteServer.exe</Link>
+    </None>
+    <None Include="..\_Compiled\Server\users.txt">
+      <Link>Server\users.txt</Link>
     </None>
   </ItemGroup>
 </Project>

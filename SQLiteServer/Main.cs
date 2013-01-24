@@ -12,8 +12,9 @@ namespace SQLiteServer {
 
 	class MainClass
 	{
-		static SQLite.Client SQLite;
-		static TCP.Server TCPServer;
+		static SQLite.Client SQLite = null;
+		static TCP.Server TCPServer = null;
+		static UserAuth User = new UserAuth();
 
 		// Constructor
 		public static void Main (string[] args)
@@ -75,6 +76,7 @@ namespace SQLiteServer {
 			TCPServer.OnConnect += new TCP.Server.OnConnectEventHandler(TCP_OnConnect);
 			TCPServer.OnDisconnect += new TCP.Server.OnDisconnectEventHandler(TCP_OnDisconnect);
 			TCPServer.OnData += new TCP.Server.OnDataEventHandler(TCP_OnData);
+			TCPServer.OnUser += new TCP.Server.OnUserEventHandler(TCP_OnUser);
 			TCPServer.Start();
 		}
 
@@ -100,11 +102,21 @@ namespace SQLiteServer {
 		// TCP-Server got SQL Query
 		private static string TCP_OnData (object sender, TCP.Server.OnDataEventArgs e)
 		{
-			Console.WriteLine ( (e.NoResult ? "! " : "") +  e.SQLQuery);
-			string SQLResult = SQLite.ExecuteSQL(e.SQLQuery, e.NoResult);
-
+			Console.WriteLine ( e.AccessRights + " " + (e.NoResult ? "-" : "+") + " "  + e.SQLQuery);
+			string SQLResult = SQLite.ExecuteSQL(e.SQLQuery, e.AccessRights, e.NoResult);
+			
 			return SQLResult;
 		}
 		
+		// TCP-Server got User
+		private static string TCP_OnUser (object sender, TCP.Server.OnUserEventArgs e)
+		{
+			string AccessRights = User.CheckUserPassword(e.Username, e.Password);
+
+			Console.WriteLine ("*** Userlogin: " + e.Username  + " (" + AccessRights + ")");
+
+			return AccessRights;
+		}
+
 	}
 }

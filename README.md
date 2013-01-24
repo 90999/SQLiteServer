@@ -12,6 +12,16 @@ SQLiteServer.exe
 [--port=PORT]         listen on Port (default: 11833)
 ```
 
+**Users are stored within "users.cfg" with the following format:**
+
+```text
+rw:Username1:Password1
+ro:Username2:Password2
+```
+
+*ro* describes an read-only user
+*rw* describes an read-write user
+
 
 SQLiteServer.Connector (License: LGPLv3)
 ========================================
@@ -28,12 +38,19 @@ namespace Test
    	{
         public void Main (string[] args)
    	    {
-   	    	bool WithResultSet = true;
-       	    SQLiteServerConnector = new SQLiteServer.Connector ("localhost", 11833);
-			SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL("SELECT 1", WithResultSet);
+       	    SQLiteServerConnector = new SQLiteServer.Connector (
+       	    	"localhost",	// Remote Host
+       	    	11833,			// Remote Port
+       	    	"Admin",		// Username
+       	    	"Admin"			// Password
+       	    );
+			SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL(
+				"SELECT 1",		// Query
+				true			// true = With result request
+			);
+       	    // XDocument        Result.XML (raw data from server)
 			// bool             Result.Error
             // string           Result.ErrorMessage
-       	    // XDocument        Result.XML
 			// string [col]     Result.Names
 			// string [row,col] Result.Value
 			// string [row,col] Result.Type
@@ -56,4 +73,6 @@ Example implementation of a Client unsing C# Client Access Library "SQLiteServer
 SQLiteServer.TestClient.exe
 [--host=HOSTNAME]     connect to Host or IP (default: localhost)
 [--port=PORT]         connect to Port (default: 11833)
+[--user=USER]         connection Username (default: Admin)
+[--pass=PASS]         connection Password (default: Admin)
 ```
