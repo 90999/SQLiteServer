@@ -12,7 +12,7 @@ SQLiteServer.exe
 [--port=PORT]         listen on Port (default: 11833)
 ```
 
-**Users are stored within "users.cfg" with the following format:**
+**Users are stored within "users.txt" with the following format:**
 
 ```text
 rw:Username1:Password1
