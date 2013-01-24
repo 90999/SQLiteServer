@@ -72,6 +72,7 @@ namespace SQLiteServer
 				// Handle Result
 				if (ANoResult) {
 					Res.Error = false;
+					Res.ErrorMessage = "";
 				} else {
 					Res.XML = XDocument.Parse (ExecResult);
 					ParseSQLiteResult (ref Res);

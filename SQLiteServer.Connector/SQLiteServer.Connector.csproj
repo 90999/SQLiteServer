@@ -57,5 +57,8 @@
     <None Include="..\_Compiled\Client\SQLiteServer.Connector.dll">
       <Link>Client\SQLiteServer.Connector.dll</Link>
     </None>
+    <None Include="..\_Compiled\Client\SQLiteServer.Connector.php">
+      <Link>Client\SQLiteServer.Connector.php</Link>
+    </None>
   </ItemGroup>
 </Project>

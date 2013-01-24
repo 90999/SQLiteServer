@@ -23,8 +23,8 @@ ro:Username2:Password2
 *rw* describes an read-write user
 
 
-SQLiteServer.Connector (License: LGPLv3)
-========================================
+C# SQLiteServer.Connector (License: LGPLv3)
+===========================================
 
 C# Client Access Library to connect applications to the SQLiteServer easily.
 
@@ -46,7 +46,7 @@ namespace Test
        	    );
 			SQLiteServer.SQLiteResult Result = SQLiteServerConnector.ExecSQL(
 				"SELECT 1",		// Query
-				true			// true = With result request
+				false			// NoResult = true
 			);
        	    // XDocument        Result.XML (raw data from server)
 			// bool             Result.Error
@@ -61,6 +61,46 @@ namespace Test
 }
 ```
 
+
+C# SQLiteServer.Connector (License: LGPLv3)
+===========================================
+
+PHP Client Access Class to connect applications to the SQLiteServer easily.
+
+**Usage example:**
+
+```PHP
+  require_once("SQLiteServer.Connector.php");
+
+  $obj = new SQLiteServerConnector(
+  	"localhost",	// remote hostname
+  	11833,			// remote port
+  	"Admin",		// username
+  	"Admin"			// password
+  );
+  $Result = $obj->ExecSQL(
+  	"SELECT 1;",	// query
+  	false			// false = with result
+  );
+
+  // DomDocument	$Result->XML 
+  // bool			$Result->Error 
+  // string			$Result->ErrorMessage 
+  // int			$Result->RowCount 
+  // int			$Result->FieldCount 
+  // array()		$Result->Names 
+  // array(array())	$Result->Value 
+  // array(array())	$Result->Type 
+```
+
+**Requipments:**
+
+The following PHP extension must be enabled to use this class: .
+
+```Text
+extension=php_mbstring.dll
+extension=php_sockets.dll
+```
 
 SQLiteServer.TestClient (License: GPLv3)
 ========================================
