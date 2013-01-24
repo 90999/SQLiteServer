@@ -43,7 +43,7 @@ namespace SQLite
 				Connections [AccessRight] = new SqliteConnection (
 					"Data Source=" + DatabaseFile +
 					";Version=3" +
-					";UseUTF8Encoding=True" +
+					";encoding=UTF-8" +
 					(AccessRight == "ro" ? ";Read Only=True" : "")
 				);
 				Connections [AccessRight].Open ();
