@@ -23,8 +23,8 @@ ro:Username2:Password2
 *rw* describes an read-write user
 
 
-C# SQLiteServer.Connector (License: LGPLv3)
-===========================================
+C#/.NET SQLiteServer.Connector.dll (License: LGPLv3)
+====================================================
 
 C# Client Access Library to connect applications to the SQLiteServer easily.
 
@@ -62,8 +62,8 @@ namespace Test
 ```
 
 
-PHP SQLiteServer.Connector (License: LGPLv3)
-============================================
+PHP SQLiteServer.Connector.php (License: LGPLv3)
+================================================
 
 PHP Client Access Class to connect applications to the SQLiteServer easily.
 
@@ -101,6 +101,49 @@ The following PHP extension must be enabled to use this class: .
 extension=php_mbstring.dll
 extension=php_sockets.dll
 ```
+
+
+Perl SQLiteServerConnector.pm (License: LGPLv3)
+==============================================
+
+Perl Client Access Module to connect applications to the SQLiteServer easily.
+
+**Usage example:**
+
+```Perl
+	use SQLiteServerConnector;
+
+	my $SQLiteServerConnector = new SQLiteServerConnector(
+		host => "localhost",	// remote host
+		port => 11833,			// remote port
+		user => "Admin",		// username
+		pass => "Admin"			// password
+	);
+
+	$Result = $SQLiteServerConnector->ExecSQL(
+		"SELECT 1",				// query
+		false					// false = with result
+	);
+
+  // XML::LibXML::Document	$Result->{XML}
+  // $Result->{Error}				int 0 = false | 1 = true/error
+  // $Result->{ErrorMessage} 		string
+  // $Result->{RowCount}			int
+  // $Result->{FieldCount}			int
+  // $Result->{Names}[col]			array
+  // $Result->{Value}[row,col]		array
+  // $Result->{Type}[row,col]		array
+```
+
+**Requipments:**
+
+The following Perl packages must be installed to use this module: .
+
+```Text
+IO::Socket
+XML::LibXML
+```
+
 
 SQLiteServer.TestClient (License: GPLv3)
 ========================================

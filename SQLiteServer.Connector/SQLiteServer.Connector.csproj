@@ -60,5 +60,8 @@
     <None Include="..\_Compiled\Client\SQLiteServer.Connector.php">
       <Link>Client\SQLiteServer.Connector.php</Link>
     </None>
+    <None Include="..\_Compiled\Client\SQLiteServerConnector.pm">
+      <Link>Client\SQLiteServerConnector.pm</Link>
+    </None>
   </ItemGroup>
 </Project>
