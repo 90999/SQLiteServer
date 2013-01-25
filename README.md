@@ -26,7 +26,7 @@ ro:Username2:Password2
 C#/.NET SQLiteServer.Connector.dll (License: LGPLv3)
 ====================================================
 
-C# Client Access Library to connect applications to the SQLiteServer easily.
+C#/.NET Client Access Library to connect applications to the SQLiteServer easily.
 
 **Usage example:**
 
@@ -95,7 +95,7 @@ PHP Client Access Class to connect applications to the SQLiteServer easily.
 
 **Requipments:**
 
-The following PHP extension must be enabled to use this class: .
+The following PHP extension must be enabled to use this class: 
 
 ```Text
 extension=php_mbstring.dll
@@ -125,19 +125,19 @@ Perl Client Access Module to connect applications to the SQLiteServer easily.
 		false					// false = with result
 	);
 
-  // XML::LibXML::Document	$Result->{XML}
-  // $Result->{Error}				int 0 = false | 1 = true/error
-  // $Result->{ErrorMessage} 		string
-  // $Result->{RowCount}			int
-  // $Result->{FieldCount}			int
-  // $Result->{Names}[col]			array
-  // $Result->{Value}[row,col]		array
-  // $Result->{Type}[row,col]		array
+	// XML::LibXML::Document	$Result->{XML}
+	// $Result->{Error}				int 0 = false | 1 = true/error
+	// $Result->{ErrorMessage} 		string
+	// $Result->{RowCount}			int
+	// $Result->{FieldCount}		int
+	// $Result->{Names}[col]		array
+	// $Result->{Value}[row,col]	array
+	// $Result->{Type}[row,col]		array
 ```
 
 **Requipments:**
 
-The following Perl packages must be installed to use this module: .
+The following Perl packages must be installed to use this module:
 
 ```Text
 IO::Socket
