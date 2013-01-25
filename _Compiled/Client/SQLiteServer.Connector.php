@@ -92,7 +92,7 @@ class SQLiteServerConnector {
 		}
 	}
 
-	// ExecSQL
+	// Send -> TCP Server
 	private function Send($ASQLQuery, $ANoResult = false) {
 		try {
 			if (! $this->Connected()) {
