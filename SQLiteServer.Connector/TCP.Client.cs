@@ -198,7 +198,14 @@ namespace TCP
 				
 				// Return XML-Document as String
 				XML.Add (XRoot);
-				return XML.Declaration.ToString () + Environment.NewLine + XML.ToString ();
+				using(var MS = new MemoryStream())
+				{
+					using (StreamReader SR = new StreamReader(MS)) {
+						XML.Save(MS);
+						MS.Seek(0, SeekOrigin.Begin);
+						return SR.ReadToEnd();
+					}
+				}
 			}
 		}
 
