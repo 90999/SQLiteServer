@@ -1,9 +1,8 @@
 using System;
-using System.Text;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Net;
-using System.IO;
+using System.IO; // StreamReader, StreamWriter
 
 // Own
 using Tools;
@@ -84,7 +83,8 @@ namespace TCP {
 		public Server (IPAddress AIP, int APort)
 		{
 			tcpListener = new TcpListener (AIP, APort);
-			listenThread = new Thread(new ThreadStart(ListenForClients));
+
+			listenThread = new Thread(ListenForClients);
 		}
 
 		// Destructor
@@ -101,21 +101,28 @@ namespace TCP {
 		public void Start() {
 			listenThread.Start();
 		}
-		
-		// listenThread stop
-		public void Stop() {
-			this.listenThread.Interrupt();		
-		}
 
 		// listenThread
-		private void ListenForClients()
+		private void ListenForClients ()
 		{
-			this.tcpListener.Start();
-			while (true)
+			this.tcpListener.Start ();
+
+			try
 			{
-				TcpClient client = this.tcpListener.AcceptTcpClient();
-				Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
-				clientThread.Start(client);
+				while (true) {
+					if (! tcpListener.Pending()) {
+						Thread.Sleep(10); 
+						continue; 
+					} else {
+						TcpClient client = this.tcpListener.AcceptTcpClient();
+						Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+						clientThread.Start(client);
+//						client.Close ();
+					}
+				}
+			}
+			catch (ThreadInterruptedException)
+			{
 			}
 		}	
 
@@ -128,8 +135,6 @@ namespace TCP {
 			StreamWriter outStream = new StreamWriter(ns);
 			string Line;
 			string AccessRight = ""; // ro = ReadOnly | rw = ReadWrite | other = NoAccess!
-
-			byte[] welcomeMsg = System.Text.Encoding.Unicode.GetBytes("SQLiteServer v1.0");
 
 			var OnDataEvent = OnData;              // Never use "Event" directly. The Handle can turn
 			var OnConnectEvent = OnConnect;        // NULL betwenn != null check and execution.
@@ -170,10 +175,11 @@ namespace TCP {
 			// Server: .<xml...         <- Following 10 Lines is the XML-Result of the Query
 			// (10 Lines Reached -> Client Parses Result)
 
-			while (true)
+			try
 			{
-				try
+				while (true)
 				{
+					// Data in Queue?
 					if ((Line = inStream.ReadLine()) != null)
 					{
 						if (Line == "") {
@@ -243,23 +249,28 @@ namespace TCP {
 						}
 					}
 
-					Thread.Sleep(2);
-				}
-				catch
-				{
-					break;
-				}
+					Thread.Sleep(10);
+				} // while
+			} // try
+			catch
+			{
 			}
-			
-			// Fire OnDisconnect event
-			if (OnDisconnectEvent != null) OnDisconnectEvent(
-				this,
-				new OnConnectDisconnectEventArgs(
-				((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString()
-				)
-			);
 
-			tcpClient.Close();
+			// Fire OnDisconnect event
+			try
+			{
+  				if (OnDisconnectEvent != null) OnDisconnectEvent(
+					this,
+					new OnConnectDisconnectEventArgs(
+					((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString()
+					)
+				);
+				tcpClient.Close();
+			}
+			catch
+			{
+			}
+
 		}
 	}
 }

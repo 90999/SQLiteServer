@@ -83,7 +83,6 @@ namespace SQLiteServer {
 		// Finalize TCP-Server
 		public static void TCP_Free ()
 		{
-			TCPServer.Stop();
 			TCPServer = null;
 		}
 

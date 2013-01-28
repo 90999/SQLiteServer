@@ -1,10 +1,8 @@
 using System;
 using System.Xml;
 using System.Xml.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using System.Collections.Generic; // IEnumerate
+using System.Linq; // IEnumerate
 
 // Own
 using TCP;
@@ -22,7 +20,7 @@ namespace SQLiteServer
 		public string[] Names;			// List of Column-Names
 		public string[,] Value;			// Values stored as [row,col] array
 		public string[,] Type;			// Types stored as [row,col] array
-	}
+	};
 
 	public class Connector
 	{
@@ -42,7 +40,6 @@ namespace SQLiteServer
 		// Destructor
 		~Connector ()
 		{
-			//
 			if (TCPClient != null) TCPClient.Disconnect ();
 		}
 

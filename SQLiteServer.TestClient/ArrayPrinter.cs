@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 
 // Abgeleitet von: http://stackoverflow.com/questions/856845/how-to-best-way-to-draw-table-in-console-app-c
 // Original Autor: Patrick McDonald

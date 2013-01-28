@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Specialized;
+using System.Collections.Specialized; // StringDictionary
 using System.Xml;
-using System.Xml.Linq;
-using System.IO;
+using System.IO; // MemoryStream
 
 // Own
 using SQLiteServer;

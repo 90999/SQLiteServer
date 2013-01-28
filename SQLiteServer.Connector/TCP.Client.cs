@@ -1,10 +1,8 @@
 using System;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using System.IO;
+using System.IO; // StreamReader, StreamWriter
 using System.Xml;
 using System.Xml.Linq;
+using System.Net.Sockets; // TcpClient
 
 namespace TCP
 {
