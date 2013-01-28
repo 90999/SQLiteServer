@@ -169,7 +169,7 @@ var
   XmlRoot: IXMLDOMElement;
   XmlStatus: IXMLDOMElement;
   //
-  StartTime: Cardinal;
+  LastLine: Cardinal;
 begin
   Result := CoDOMDocument30.Create;
   Result.appendChild(Result.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8" standalone="yes"'));
@@ -204,17 +204,18 @@ begin
 		RecvStr := '';
 		RecvLine := '';
 
-    StartTime := WinApi.Windows.GetTickCount;
+    LastLine := 0;
     while (TRUE) do begin
 
       RecvLine := Socket.IOHandler.ReadLnWait;
       if (not Socket.IOHandler.ReadLnTimedout) then begin
-
         DynArray := SplitString(RecvLine, ':');
         try
           if ((Length(DynArray)>=2) and (UpperCase(DynArray[0]) = 'RESULT')) then begin
+            LastLine := GetTickCount;
             Count := StrToInt(Trim(DynArray[1]));
           end else if ((Count>0) and (Copy(RecvLine,1,1)='.')) then begin
+            LastLine := GetTickCount;
             Count := Count -1;
             RecvStr := RecvStr + Copy(RecvLine,2,Length(RecvLine));
             if (Count > 0) then begin
@@ -230,7 +231,7 @@ begin
           SetLength(DynArray, 0);
         end;
 
-      end else if (WinApi.Windows.GetTickCount-StartTime>10000) then begin
+      end else if (LastLine > 0) and (GetTickCount-LastLine>1000) then begin
         raise Exception.Create('Read request timed out');
       end;
     end;
@@ -253,7 +254,7 @@ end;
 
 procedure TSQLiteServerConnector.ParseSQLiteResult(var AResult: TSQLiteServerResult);
 var
-  XmlStatus, XmlFields, XmlRows: IXMLDOMNode;
+  XmlStatus, XmlFields: IXMLDOMNode;
   FieldArr, ColArr, RowArr: IXMLDOMNodeList;
   I,N: Integer;
   R,C: Int64;
@@ -303,14 +304,13 @@ begin
     SetLength(AResult.ValueType, AResult.RowCount, AResult.FieldCount);
     SetLength(AResult.Value, AResult.RowCount, AResult.FieldCount);
 
-    XmlRows := AResult.XML.getElementsByTagName('Rows').item[0];
-    RowArr := XmlFields.childNodes;
+    RowArr := AResult.XML.getElementsByTagName('Row');
     R := -1;
     for N := 0 to RowArr.length-1 do begin
       if RowArr.item[N].nodeName = 'Row' then begin
         R := R + 1;
         C := -1;
-        ColArr := RowArr.item[R].childNodes;
+        ColArr := RowArr.item[N].childNodes;
         for I := 0 to ColArr.length-1 do begin
           if ColArr.item[I].nodeName = 'Col' then begin
             C := C + 1;

@@ -78,10 +78,12 @@ namespace SQLite
 		}
 
 		// ExecuteSQL
-		public string ExecuteSQL (string ASQL, string AccessRight, Boolean ANoResult = false)
+		public void ExecuteSQL (string ASQL, string AccessRight, ref string AResult, Boolean ANoResult = false)
 		{
 			try
 			{
+				AResult = String.Empty;
+
 				// Check what SQLite connection to use (ro or rw or throw exception)
 				if (! AccessRights.Contains(AccessRight)) {
 					throw new System.UnauthorizedAccessException("Not authorized");
@@ -95,9 +97,7 @@ namespace SQLite
 						// Execute SQL-Query 
 						Cmd.CommandText = ASQL;
 						Cmd.ExecuteNonQuery();
-
-						// Return no result
-						return String.Empty;
+						return;
 
 					// Query WITH result request by client
 					} else {
@@ -160,7 +160,8 @@ namespace SQLite
 							using (StreamReader SR = new StreamReader(MS)) {
 								XML.Save(MS);
 								MS.Seek(0, SeekOrigin.Begin);
-								return SR.ReadToEnd();
+								AResult = SR.ReadToEnd();
+								return;
 							}
 						}
 					}
@@ -186,7 +187,8 @@ namespace SQLite
 					using (StreamReader SR = new StreamReader(MS)) {
 						XML.Save(MS);
 						MS.Seek(0, SeekOrigin.Begin);
-						return SR.ReadToEnd();
+						AResult = SR.ReadToEnd();
+						return;
 					}
 				}
 			}

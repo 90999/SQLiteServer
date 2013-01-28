@@ -45,12 +45,12 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="TCP.Server.cs" />
     <Compile Include="SQLite.Client.cs" />
     <Compile Include="..\_Libs\Tools.cs">
       <Link>_Libs\Tools.cs</Link>
     </Compile>
     <Compile Include="UserAuth.cs" />
+    <Compile Include="Server.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -7,77 +7,11 @@ using System.IO; // StreamReader, StreamWriter
 // Own
 using Tools;
 
-namespace TCP {
+namespace SQLiteServer {
 
 	public class Server {
 		private TcpListener tcpListener;
 		private Thread listenThread;
-
-		// OnData Event
-		public class OnDataEventArgs : EventArgs
-		{
-			private string _SQLQuery;
-			private Boolean _NoResult;
-			private string _AccessRights;
-			public OnDataEventArgs(string SQLQuery, Boolean NoResult, string AccessRights)
-			{
-				_SQLQuery = SQLQuery;
-				_NoResult = NoResult;
-				_AccessRights = AccessRights;
-			}
-			public string SQLQuery
-			{
-				get { return _SQLQuery; }
-			}
-			public Boolean NoResult
-			{
-				get { return _NoResult; }
-			}
-			public string AccessRights
-			{
-				get { return _AccessRights; }
-			}
-		}
-		public delegate string OnDataEventHandler(object sender, OnDataEventArgs e);
-		public event OnDataEventHandler OnData;
-
-		// OnConnect/Disconnect Event
-		public class OnConnectDisconnectEventArgs : EventArgs {
-			private string _RemoteEndPoint;
-			public OnConnectDisconnectEventArgs(string RemoteEndPoint)
-			{
-				_RemoteEndPoint = RemoteEndPoint;
-			}
-			public string RemoteEndPoint
-			{
-				get { return _RemoteEndPoint; }
-			}
-		}
-		public delegate void OnConnectEventHandler(object sender, OnConnectDisconnectEventArgs e);
-		public event OnConnectEventHandler OnConnect;
-		public delegate void OnDisconnectEventHandler(object sender, OnConnectDisconnectEventArgs e);
-		public event OnDisconnectEventHandler OnDisconnect;
-		
-		// OnUser Event
-		public class OnUserEventArgs : EventArgs {
-			private string _Username;
-			private string _Password;
-			public OnUserEventArgs(string Username, string Password)
-			{
-				_Username = Username;
-				_Password = Password;
-			}
-			public string Username
-			{
-				get { return _Username; }
-			}
-			public string Password
-			{
-				get { return _Password; }
-			}
-		}
-		public delegate string OnUserEventHandler(object sender, OnUserEventArgs e);
-		public event OnUserEventHandler OnUser;
 
 		// Constructor
 		public Server (IPAddress AIP, int APort)
@@ -136,18 +70,8 @@ namespace TCP {
 			string Line;
 			string AccessRight = ""; // ro = ReadOnly | rw = ReadWrite | other = NoAccess!
 
-			var OnDataEvent = OnData;              // Never use "Event" directly. The Handle can turn
-			var OnConnectEvent = OnConnect;        // NULL betwenn != null check and execution.
-			var OnDisconnectEvent = OnDisconnect;  // 
-			var OnUserEvent = OnUser;              // 
-
-			// Fire: OnConnect event
-			if (OnConnectEvent != null) OnConnectEvent(
-				this,
-				new OnConnectDisconnectEventArgs(
-				  ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString()
-				)
-			);
+			// On Connect
+			Console.WriteLine("*** Connect: " + ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString());
 
 			// Send Welcome Message to Client
 			outStream.WriteLine("SQLiteServer v1.0");
@@ -170,7 +94,7 @@ namespace TCP {
 			// Client: .SELECT          <- Following 3 Lines are SQL Query-Lines prefixed by "."
 			// Client: .*
 			// Client: .FROM test;
-			// (3 Lines Reached -> OnDataEvent fired within Server)
+			// (3 Lines Reached -> OnSQLQueryEvent fired within Server)
 			// Server: RESULT:10        <- Where 10 is Number of Lines following
 			// Server: .<xml...         <- Following 10 Lines is the XML-Result of the Query
 			// (10 Lines Reached -> Client Parses Result)
@@ -189,14 +113,17 @@ namespace TCP {
 
 							// USER
 							if ((LineSplited.Length == 3) && (LineSplited.GetValue(0).ToString().ToUpper() == "USER")) {
-								// Fire: OnUser event
-								if (OnUserEvent != null) AccessRight = OnUserEvent(
-									this,
-									new OnUserEventArgs(
+
+								lock (Sync.signal)
+								{
+									AccessRight = MainClass.User.CheckUserPassword(
 										LineSplited.GetValue(1).ToString(),
 										LineSplited.GetValue(2).ToString()
-									)
-								);
+							   		);
+								}
+								
+								Console.WriteLine ("*** Userlogin: " + LineSplited.GetValue(1).ToString()  + " (" + AccessRight + ")");
+
 								outStream.WriteLine(
 									"RIGHTS:" + AccessRight
 								);
@@ -228,10 +155,19 @@ namespace TCP {
 							}
 						}
 
-						// Fire OnData event -> Execute SQLite-Query
-						if ((QueryDone) && (OnDataEvent != null))
+						// Fire OnSQLQuery event -> Execute SQLite-Query
+						if (QueryDone)
 						{
-							string QueryResult = OnDataEvent(this, new OnDataEventArgs(Query, NoResult, AccessRight));
+							string QueryResult = "";
+
+							// Execute Query
+							lock (Sync.signal)
+							{
+								Console.WriteLine ( AccessRight + " " + (NoResult ? "-" : "+") + " "  + Query);
+								MainClass.SQLite.ExecuteSQL(Query, AccessRight, ref QueryResult, NoResult);
+							}
+
+							// QueryResult = OnSQLQueryEvent(this, new OnSQLQueryEventArgs(Query, NoResult, AccessRight));
 
 							// If there is a Result request return result...
 							if (! NoResult) {
@@ -256,15 +192,10 @@ namespace TCP {
 			{
 			}
 
-			// Fire OnDisconnect event
+			// On Disconnect
 			try
 			{
-  				if (OnDisconnectEvent != null) OnDisconnectEvent(
-					this,
-					new OnConnectDisconnectEventArgs(
-					((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString()
-					)
-				);
+				Console.WriteLine("*** Disconnect: " + ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString());
 				tcpClient.Close();
 			}
 			catch

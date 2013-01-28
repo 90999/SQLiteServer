@@ -2,19 +2,24 @@ using System;
 using System.IO;
 using System.Collections.Specialized; // StringDictionary
 using System.Net;
+using System.Threading;
 
 // Own
-using TCP;
 using SQLite;
 using Tools;
 
 namespace SQLiteServer {
 
+	class Sync {
+		public static Object signal;
+		public static bool block;
+	}
+
 	class MainClass
 	{
-		static SQLite.Client SQLite = null;
-		static TCP.Server TCPServer = null;
-		static UserAuth User = new UserAuth();
+		public static SQLite.Client SQLite = null; // use lock!
+		static Server TCPServer = null;
+		public static UserAuth User = null; // use lock!
 
 		// Constructor
 		public static void Main (string[] args)
@@ -32,8 +37,15 @@ namespace SQLiteServer {
 				if (Parameters ["host"] != null)	Host = Parameters ["host"];
 				if (Parameters ["port"] != null)	Port = Convert.ToInt32 (Parameters ["port"]);
 
+				// Init Synchronization
+				Sync.signal = new object();
+				Sync.block = true;
+
 				// Init SQLite-Connection
 				SQLite = new SQLite.Client (Path.Combine (Tools.System.GetProgramDir (), DBFile));
+
+				// Init UserAuth
+				User = new UserAuth();
 
 				// Host -> IP
 				IPAddress IP = null;
@@ -56,6 +68,10 @@ namespace SQLiteServer {
 				// Init TCP Server
 				TCP_Init (IP, Port);
 
+				//while(true) {
+				//	Sleep
+				// }
+
 			} catch (Exception e) {
 				Console.WriteLine("Error: " + e.Message);
 				Environment.Exit(99);
@@ -65,18 +81,19 @@ namespace SQLiteServer {
 		// Destructor
 		~ MainClass()
 		{
-			TCP_Free ();
-			SQLite = null;
+			lock (Sync.signal)
+			{
+				Monitor.Wait(Sync.signal);
+
+				TCP_Free ();
+				SQLite = null;
+			}
 		}
 
 		// Initalize TCP-Server
 		public static void TCP_Init (IPAddress AIP, int APort)
 		{
-			TCPServer = new TCP.Server(AIP, APort);
-			TCPServer.OnConnect += new TCP.Server.OnConnectEventHandler(TCP_OnConnect);
-			TCPServer.OnDisconnect += new TCP.Server.OnDisconnectEventHandler(TCP_OnDisconnect);
-			TCPServer.OnData += new TCP.Server.OnDataEventHandler(TCP_OnData);
-			TCPServer.OnUser += new TCP.Server.OnUserEventHandler(TCP_OnUser);
+			TCPServer = new Server(AIP, APort);
 			TCPServer.Start();
 		}
 
@@ -84,37 +101,6 @@ namespace SQLiteServer {
 		public static void TCP_Free ()
 		{
 			TCPServer = null;
-		}
-
-		// TCP-Server Connect
-		private static void TCP_OnConnect(object sender, TCP.Server.OnConnectDisconnectEventArgs e)
-		{
-			Console.WriteLine("*** Connect: " + e.RemoteEndPoint);
-		}
-		
-		// TCP-Server Disconnect
-		private static void TCP_OnDisconnect(object sender, TCP.Server.OnConnectDisconnectEventArgs e)
-		{
-			Console.WriteLine("*** Disconnect: " + e.RemoteEndPoint);
-		}
-		
-		// TCP-Server got SQL Query
-		private static string TCP_OnData (object sender, TCP.Server.OnDataEventArgs e)
-		{
-			Console.WriteLine ( e.AccessRights + " " + (e.NoResult ? "-" : "+") + " "  + e.SQLQuery);
-			string SQLResult = SQLite.ExecuteSQL(e.SQLQuery, e.AccessRights, e.NoResult);
-			
-			return SQLResult;
-		}
-		
-		// TCP-Server got User
-		private static string TCP_OnUser (object sender, TCP.Server.OnUserEventArgs e)
-		{
-			string AccessRights = User.CheckUserPassword(e.Username, e.Password);
-
-			Console.WriteLine ("*** Userlogin: " + e.Username  + " (" + AccessRights + ")");
-
-			return AccessRights;
 		}
 
 	}
