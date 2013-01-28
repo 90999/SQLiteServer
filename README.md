@@ -1,4 +1,4 @@
-Download: [ZIP Archive](zipball/master)
+Download: [ZIP Archive](SQLiteServer/zipball/master)
 
 SQLiteServer (License: GPLv3)
 =============================
