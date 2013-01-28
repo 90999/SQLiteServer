@@ -105,6 +105,49 @@ extension=php_sockets.dll
 ```
 
 
+Delphi SQLiteServer.Connector.pas (License: LGPLv3)
+===================================================
+
+Delphi Client Access Class to connect applications to the SQLiteServer easily.
+
+**Usage example:**
+
+```Delphi
+  use SQLiteServer.Connector {, ...};
+
+  var
+    SQLiteServerConnector: TSQLiteServerConnector;
+    SQLiteResult: TSQLiteServerResult;
+    
+  begin
+  
+  SQLiteServerConnector := TSQLiteServerConnector.Create(
+    'localhost', // remote hostname
+    11833,       // remote port
+    'Admin',     // username
+    'Admin'      // password
+  );
+
+  SQLiteResult := SQLiteServerConnector.ExecSQL(
+    'SELECT 1;', // query
+    FALSE        // FALSE = with result
+  );
+
+  // DOMDocument30	SQLiteResult.XML 
+  // boolean		SQLiteResult.Error 
+  // string			SQLiteResult.ErrorMessage 
+  // int			SQLiteResult.RowCount 
+  // int			SQLiteResult.FieldCount 
+  // array			SQLiteResult.Names 
+  // array of array	SQLiteResult.Value 
+  // array of array	SQLiteResult.ValueType 
+  
+  SQLiteServerConnector.FreeResult(SQLiteResult);
+  SQLiteServerConnector.Free;
+  
+  end.
+```
+
 Perl SQLiteServerConnector.pm (License: LGPLv3)
 ==============================================
 

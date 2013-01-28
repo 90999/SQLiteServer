@@ -63,5 +63,8 @@
     <None Include="..\_Compiled\Client\SQLiteServerConnector.pm">
       <Link>Client\SQLiteServerConnector.pm</Link>
     </None>
+    <None Include="..\_Compiled\Client\SQLiteServer.Connector.pas">
+      <Link>Client\SQLiteServer.Connector.pas</Link>
+    </None>
   </ItemGroup>
 </Project>
