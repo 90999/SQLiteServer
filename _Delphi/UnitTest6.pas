@@ -2,7 +2,7 @@ unit UnitTest6;
 
 // -----------------------------------------------------------------------------
 //
-// Descrition: Measure INSERTS with RESULT (~ 10sec)
+// Description: Measure INSERTS with RESULT (~ 10sec)
 //
 // Changes:
 // 14.02.2012 Tim David Saxen: First Release

@@ -2,7 +2,7 @@
 
 // -----------------------------------------------------------------------------
 //
-// Descrition: Write UTF-8 and read back
+// Description: Write UTF-8 and read back
 //
 // Changes:
 // 14.02.2012 Tim David Saxen: First Release

@@ -2,7 +2,7 @@ unit UnitTest2;
 
 // -----------------------------------------------------------------------------
 //
-// Descrition: Insert 500 random rows and verify
+// Description: Insert 500 random rows and verify
 //
 // Changes:
 // 14.02.2012 Tim David Saxen: First Release

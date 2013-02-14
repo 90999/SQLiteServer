@@ -2,7 +2,7 @@ unit UnitTest5;
 
 // -----------------------------------------------------------------------------
 //
-// Descrition: Check Transaction and Rollback
+// Description: Check Transaction and Rollback
 //
 // Changes:
 // 14.02.2012 Tim David Saxen: First Release

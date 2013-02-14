@@ -2,7 +2,7 @@ unit UnitTest4;
 
 // -----------------------------------------------------------------------------
 //
-// Descrition: Check Datatypes: BLOB, REAL, INTEGER and TEXT
+// Description: Check Datatypes: BLOB, REAL, INTEGER and TEXT
 //
 // Changes:
 // 14.02.2012 Tim David Saxen: First Release

@@ -2,7 +2,7 @@ unit UnitTest1;
 
 // -----------------------------------------------------------------------------
 //
-// Descrition: Create table and verify then drop table and verify
+// Description: Create table and verify then drop table and verify
 //
 // Changes:
 // 14.02.2012 Tim David Saxen: First Release
