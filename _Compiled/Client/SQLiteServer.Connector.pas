@@ -4,7 +4,7 @@ interface
 
 uses
   // Indy
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdGlobal,
   // Delphi
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
@@ -40,6 +40,17 @@ type
     destructor Destroy; override;
     function ExecSQL(ASQLQuery: String; const ANoResult: Boolean = FALSE): TSQLiteServerResult;
     procedure FreeResult(var AResult: TSQLiteServerResult);
+    function EscapeAndQuote(AValue: String): String; overload;
+    function EscapeAndQuote(AValue: Single): String; overload;
+    function EscapeAndQuote(AValue: Int64): String; overload;
+    function EscapeAndQuote(AValue: Integer): String; overload;
+    function EscapeAndQuote(AValue: Boolean): String; overload;
+    function EscapeAndQuote(AValue: TBytes): String; overload;
+    function Escape(AValue: String): String; overload;
+    function Escape(AValue: Single): String; overload;
+    function Escape(AValue: Int64): String; overload;
+    function Escape(AValue: Integer): String; overload;
+    function Escape(AValue: Boolean): String; overload;
   end;
 
 implementation
@@ -89,10 +100,13 @@ begin
       raise Exception.Create('Cannot connect to remote host');
     end;
 
+    // Set Default Encoding
+    Socket.IOHandler.DefStringEncoding := TIdTextEncoding.UTF8;
+
     // Wait on Greeting from Server
     StartTime := WinApi.Windows.GetTickCount;
     while (TRUE)  do begin
-      Line := Socket.IOHandler.ReadLnWait();
+      Line := Socket.IOHandler.ReadLnWait;
       if (not Socket.IOHandler.ReadLnTimedOut) then begin
         if (Line <> 'SQLiteServer v1.0') then begin
           raise Exception.Create('Wrong Server version detected: ' + Line);
@@ -356,6 +370,96 @@ begin
 	SetLength(AResult.Names, 0);
 	SetLength(AResult.Value, 0, 0);
 	SetLength(AResult.ValueType, 0, 0);
+end;
+
+// -----------------------------------------------------------------------------
+// SQL (MySQL)
+// -----------------------------------------------------------------------------
+
+function TSQLiteServerConnector.EscapeAndQuote(AValue: String): String;
+begin
+  Result := '"' + Escape(AValue) + '"';
+end;
+
+function TSQLiteServerConnector.EscapeAndQuote(AValue: Single): String;
+begin
+  Result := '"' + Escape(AValue) + '"';
+end;
+
+function TSQLiteServerConnector.EscapeAndQuote(AValue: Int64): String;
+begin
+  Result := '"' + Escape(AValue) + '"';
+end;
+
+function TSQLiteServerConnector.EscapeAndQuote(AValue: Integer): String;
+begin
+  Result := '"' + Escape(AValue) + '"';
+end;
+
+function TSQLiteServerConnector.EscapeAndQuote(AValue: Boolean): String;
+begin
+  Result := '"' + Escape(AValue) + '"';
+end;
+
+function TSQLiteServerConnector.EscapeAndQuote(AValue: TBytes): String;
+var
+  B: Byte;
+begin
+  Result := 'X''';
+  for B in AValue do begin
+    Result := Result + IntToHex(B,2);
+  end;
+  Result := Result + '''';
+end;
+
+function TSQLiteServerConnector.Escape(AValue: String): String;
+var
+  I: Integer;
+begin
+  for I := length(AValue) downto 1 do begin
+    if Copy(AValue,I,1) = #0 then begin
+      AValue[i] := '0';
+      Insert ('\', AValue, I);
+    end;
+    if Copy(AValue,I,1) = '\' then begin
+      Insert ('\', AValue, I);
+    end;
+    if Copy(AValue,I,1) = '''' then begin
+      Insert ('\', AValue, I);
+    end;
+    if Copy(AValue,I,1) = '"' then begin
+      Insert ('\', AValue, I);
+    end;
+  end;
+  Result := AValue
+end;
+
+function TSQLiteServerConnector.Escape(AValue: Single): String;
+var
+  DS: Char;
+begin
+  DS := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    Result := Escape(FloatToStr(AValue));
+  except
+  end;
+  FormatSettings.DecimalSeparator := DS;
+end;
+
+function TSQLiteServerConnector.Escape(AValue: Int64): String;
+begin
+  Result := Escape(IntToStr(AValue));
+end;
+
+function TSQLiteServerConnector.Escape(AValue: Integer): String;
+begin
+  Result := Escape(IntToStr(AValue));
+end;
+
+function TSQLiteServerConnector.Escape(AValue: Boolean): String;
+begin
+  if AValue then Result := Escape('1') else Result := Escape('0');
 end;
 
 (*

@@ -42,7 +42,7 @@ namespace TCP
 				Connection = new TcpClient(Host, Port);
 				Stream = Connection.GetStream();
 
-				StreamReader inStream = new StreamReader (Stream);
+				StreamReader inStream = new StreamReader (Stream, System.Text.Encoding.UTF8);
 				StreamWriter outStream = new StreamWriter (Stream);
 
 				Int64 StartTick = 0;
@@ -67,7 +67,10 @@ namespace TCP
 				}
 
 				// Send Auth information
-				outStream.WriteLine("USER:" + Username + ":" + Password);
+				outStream.WriteLine(
+					"USER:" + Username + ":" + Password,
+					System.Text.Encoding.UTF8
+				);
 				outStream.Flush();
 
 				// Wait for Auth reply...
@@ -131,13 +134,19 @@ namespace TCP
 		{
 			try
 			{
-				StreamReader inStream = new StreamReader (Stream);
+				StreamReader inStream = new StreamReader (Stream, System.Text.Encoding.UTF8);
 				StreamWriter outStream = new StreamWriter (Stream);
 
 				// Request senden
-				outStream.WriteLine("REQUEST:" + ASQLQuery.Split('\n').Length + ":" + (ANoResult ? "1" : "0"));
+				outStream.WriteLine(
+					"REQUEST:" + ASQLQuery.Split('\n').Length + ":" + (ANoResult ? "1" : "0"),
+					System.Text.Encoding.UTF8
+				);
 				foreach (string Line in ASQLQuery.Split('\n')) {
-					outStream.WriteLine("." + Line);
+					outStream.WriteLine(
+						"." + Line,
+						System.Text.Encoding.UTF8
+					);
 				}
 				outStream.Flush ();
 
@@ -198,7 +207,7 @@ namespace TCP
 				XML.Add (XRoot);
 				using(var MS = new MemoryStream())
 				{
-					using (StreamReader SR = new StreamReader(MS)) {
+					using (StreamReader SR = new StreamReader(MS, System.Text.Encoding.UTF8)) {
 						XML.Save(MS);
 						MS.Seek(0, SeekOrigin.Begin);
 						return SR.ReadToEnd();

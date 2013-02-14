@@ -38,7 +38,7 @@ namespace SQLiteServer
 
 			try {
 
-				StreamReader streamReader = new StreamReader (Path.Combine (Tools.System.GetProgramDir (), "users.txt"));
+				StreamReader streamReader = new StreamReader (Path.Combine (Tools.System.GetProgramDir (), "users.txt"), System.Text.Encoding.UTF8);
 				while ((Line = streamReader.ReadLine()) != null) {
 					Line = Line.Trim();
 					if (Line != "") {

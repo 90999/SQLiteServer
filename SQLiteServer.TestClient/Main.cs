@@ -15,6 +15,10 @@ namespace TestClient
 		// Constructor
 		public static void Main (string[] args)
 		{
+			// Init Console Output
+			// Console.OutputEncoding = System.Text.Encoding.UTF8;
+			// Console.InputEncoding = System.Text.Encoding.UTF8;
+
 			// Show Welcom Message
 			Console.WriteLine ("SQLiteServer Test Client v1.0");
 			Console.WriteLine ("");
@@ -96,7 +100,7 @@ namespace TestClient
 									Console.WriteLine("");
 									using(var MS = new MemoryStream())
 									{
-										using (StreamReader SR = new StreamReader(MS)) {
+										using (StreamReader SR = new StreamReader(MS, System.Text.Encoding.UTF8)) {
 											Result.XML.Save(MS);
 											MS.Seek(0, SeekOrigin.Begin);
 											Console.WriteLine(SR.ReadToEnd());

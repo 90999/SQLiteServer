@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="_Libs\" />
     <Folder Include="Client\" />
+    <Folder Include="_Delphi\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\_Compiled\Client\Mono.Data.Sqlite.dll">
@@ -65,6 +66,48 @@
     </None>
     <None Include="..\_Compiled\Client\SQLiteServer.Connector.pas">
       <Link>Client\SQLiteServer.Connector.pas</Link>
+    </None>
+    <None Include="..\_Delphi\Test.dpr">
+      <Link>_Delphi\Test.dpr</Link>
+    </None>
+    <None Include="..\_Delphi\Test.dproj">
+      <Link>_Delphi\Test.dproj</Link>
+    </None>
+    <None Include="..\_Delphi\Test.res">
+      <Link>_Delphi\Test.res</Link>
+    </None>
+    <None Include="..\_Delphi\UnitFrmMain.dfm">
+      <Link>_Delphi\UnitFrmMain.dfm</Link>
+    </None>
+    <None Include="..\_Delphi\UnitFrmMain.pas">
+      <Link>_Delphi\UnitFrmMain.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest1.pas">
+      <Link>_Delphi\UnitTest1.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest2.pas">
+      <Link>_Delphi\UnitTest2.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest3.pas">
+      <Link>_Delphi\UnitTest3.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest4.pas">
+      <Link>_Delphi\UnitTest4.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest5.pas">
+      <Link>_Delphi\UnitTest5.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest6.pas">
+      <Link>_Delphi\UnitTest6.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitTest7.pas">
+      <Link>_Delphi\UnitTest7.pas</Link>
+    </None>
+    <None Include="..\_Delphi\UnitToolsProject.pas">
+      <Link>_Delphi\UnitToolsProject.pas</Link>
+    </None>
+    <None Include="..\_Delphi\Win32\Debug\Test.exe">
+      <Link>_Delphi\Win32\Debug\Test.exe</Link>
     </None>
   </ItemGroup>
 </Project>

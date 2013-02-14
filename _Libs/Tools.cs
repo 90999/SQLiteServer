@@ -7,10 +7,15 @@ using System.Linq;
 
 namespace Tools {
 
-	public class System
+    class Sync {
+        public static Object signal;
+        public static bool block;
+    }
+
+    public class System
 	{
 
-		// Get Directory of current EXE-File
+        // Get Directory of current EXE-File
 		public static string GetProgramDir()
 		{
 			return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

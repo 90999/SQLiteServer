@@ -5,20 +5,15 @@ using System.Net;
 using System.Threading;
 
 // Own
-using SQLite;
 using Tools;
 
 namespace SQLiteServer {
 
-	class Sync {
-		public static Object signal;
-		public static bool block;
-	}
-
 	class MainClass
 	{
-		public static SQLite.Client SQLite = null; // use lock!
-		static Server TCPServer = null;
+        public static SQLiteClient SQLite = null; // use lock!
+        public static QueryCache QueryCache = null; // use lock!
+        static TCPServer TCPServer = null;
 		public static UserAuth User = null; // use lock!
 
 		// Constructor
@@ -26,6 +21,10 @@ namespace SQLiteServer {
 		{
 			try
 			{
+				// Init Console Output
+				//Console.OutputEncoding = System.Text.Encoding.UTF8;
+				//Console.InputEncoding = System.Text.Encoding.UTF8;
+
 				// Initialize Variables
 				string DBFile = "database.db3";
 				string Host = "localhost";
@@ -42,7 +41,8 @@ namespace SQLiteServer {
 				Sync.block = true;
 
 				// Init SQLite-Connection
-				SQLite = new SQLite.Client (Path.Combine (Tools.System.GetProgramDir (), DBFile));
+                SQLite = new SQLiteClient (Path.Combine (Tools.System.GetProgramDir (), DBFile));
+                QueryCache = new QueryCache();
 
 				// Init UserAuth
 				User = new UserAuth();
@@ -86,14 +86,15 @@ namespace SQLiteServer {
 				Monitor.Wait(Sync.signal);
 
 				TCP_Free ();
-				SQLite = null;
-			}
+                QueryCache = null;
+                SQLite = null;
+            }
 		}
 
 		// Initalize TCP-Server
 		public static void TCP_Init (IPAddress AIP, int APort)
 		{
-			TCPServer = new Server(AIP, APort);
+			TCPServer = new TCPServer(AIP, APort);
 			TCPServer.Start();
 		}
 
