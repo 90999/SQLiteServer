@@ -1,4 +1,4 @@
-Download: [ZIP Archive](SQLiteServer/zipball/master)
+Download: [ZIP Archive](https://github.com/HerrOtto/SQLiteServer/archive/master.zip)
 
 SQLiteServer (License: GPLv3)
 =============================
