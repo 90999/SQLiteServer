@@ -25,7 +25,7 @@ C#/.NET:
 * Sample: [SQLiteServer.TestClient](https://github.com/HerrOtto/SQLiteServer/tree/master/SQLiteServer.TestClient)
 
 Delphi:
-* Source: [_Compiled/Client/SQLiteServer.Connector.php](https://github.com/HerrOtto/SQLiteServer/blob/master/_Compiled/Client/SQLiteServer.Connector.php)
+* Source: [_Compiled/Client/SQLiteServer.Connector.pas](https://github.com/HerrOtto/SQLiteServer/blob/master/_Compiled/Client/SQLiteServer.Connector.pas)
 * Description: [Wiki](https://github.com/HerrOtto/SQLiteServer/wiki/2.1-Connecting-from-Delphi-XE-Application)
 * Sample: [_Delphi](https://github.com/HerrOtto/SQLiteServer/tree/master/_Delphi)
 
