@@ -3,9 +3,9 @@
 SQLite is a fast and simple file based Database implementation. This Application gains access to a local
 Database file from a remote host over TCP/IP.
 
-Source code: [SQLiteServer](https://github.com/HerrOtto/SQLiteServer/tree/master/SQLiteServer)
-Compiled: [_Compiled/Server](https://github.com/HerrOtto/SQLiteServer/tree/master/_Compiled/Server)
-Description: [Wiki](https://github.com/HerrOtto/SQLiteServer/wiki/1.2-SQLiteServer-usage-and-installation)
+* Source code: [SQLiteServer](https://github.com/HerrOtto/SQLiteServer/tree/master/SQLiteServer)
+* Compiled: [_Compiled/Server](https://github.com/HerrOtto/SQLiteServer/tree/master/_Compiled/Server)
+* Description: [Wiki](https://github.com/HerrOtto/SQLiteServer/wiki/1.2-SQLiteServer-usage-and-installation)
 
 The Server is a multi platform application and tested uccessfully on Linux 2.6+ and Windows 7+.
 
